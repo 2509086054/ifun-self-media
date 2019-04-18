@@ -41,6 +41,7 @@ export default class loaderScreen extends BasicContainer {
      * 3.加载APP资源
      * loadAppAssets()
      */
+
     this.initLoadingAssets();
   }
 
