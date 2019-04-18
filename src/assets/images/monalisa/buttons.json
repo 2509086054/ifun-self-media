@@ -1,0 +1,42 @@
+{
+  "frames": {
+    "repeat.png": {
+      "frame": { "x": 367, "y": 1, "w": 102, "h": 102 },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": { "x": 13, "y": 13, "w": 102, "h": 102 },
+      "sourceSize": { "w": 128, "h": 128 }
+    },
+    "RightArrow.png": {
+      "frame": { "x": 1, "y": 1, "w": 120, "h": 120 },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": { "x": 4, "y": 4, "w": 120, "h": 120 },
+      "sourceSize": { "w": 128, "h": 128 }
+    },
+    "wine-glass.png": {
+      "frame": { "x": 123, "y": 1, "w": 120, "h": 120 },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": { "x": 0, "y": 0, "w": 120, "h": 120 },
+      "sourceSize": { "w": 120, "h": 120 }
+    },
+    "wine-glass_no.png": {
+      "frame": { "x": 245, "y": 1, "w": 120, "h": 120 },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": { "x": 0, "y": 0, "w": 120, "h": 120 },
+      "sourceSize": { "w": 120, "h": 120 }
+    }
+  },
+  "meta": {
+    "app": "https://www.codeandweb.com/texturepacker",
+    "version": "1.0",
+    "image": "buttons.png",
+    "format": "RGBA8888",
+    "size": { "w": 470, "h": 122 },
+    "scale": "1",
+    "smartupdate":
+      "$TexturePacker:SmartUpdate:b7159b41212be87f2979f22fd14e6a34:110d5d9c4fdd4833bce959629d914adb:b34c8670b11bb20cb1751a70d3683e22$"
+  }
+}

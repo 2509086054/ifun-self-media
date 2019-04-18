@@ -1,0 +1,73 @@
+{
+  "frames": {
+    "talk-1.png": {
+      "frame": { "x": 285, "y": 430, "w": 270, "h": 219 },
+      "rotated": true,
+      "trimmed": true,
+      "spriteSourceSize": { "x": 0, "y": 3, "w": 270, "h": 219 },
+      "sourceSize": { "w": 282, "h": 226 }
+    },
+    "talk-2.png": {
+      "frame": { "x": 1, "y": 673, "w": 246, "h": 246 },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": { "x": 3, "y": 0, "w": 246, "h": 246 },
+      "sourceSize": { "w": 253, "h": 248 }
+    },
+    "talk-3.png": {
+      "frame": { "x": 267, "y": 919, "w": 234, "h": 207 },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": { "x": 3, "y": 2, "w": 234, "h": 207 },
+      "sourceSize": { "w": 238, "h": 215 }
+    },
+    "talk-4.png": {
+      "frame": { "x": 249, "y": 702, "w": 255, "h": 215 },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": { "x": 1, "y": 1, "w": 255, "h": 215 },
+      "sourceSize": { "w": 257, "h": 217 }
+    },
+    "talk-5.png": {
+      "frame": { "x": 1, "y": 921, "w": 264, "h": 217 },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": { "x": 3, "y": 1, "w": 264, "h": 217 },
+      "sourceSize": { "w": 268, "h": 224 }
+    },
+    "talk-6.png": {
+      "frame": { "x": 1, "y": 430, "w": 282, "h": 241 },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": { "x": 3, "y": 1, "w": 282, "h": 241 },
+      "sourceSize": { "w": 285, "h": 244 }
+    },
+    "tips-0.png": {
+      "frame": { "x": 1, "y": 1, "w": 449, "h": 427 },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": { "x": 0, "y": 0, "w": 449, "h": 427 },
+      "sourceSize": { "w": 449, "h": 427 }
+    }
+  },
+  "animations": {
+    "talk": [
+      "talk-1.png",
+      "talk-2.png",
+      "talk-3.png",
+      "talk-4.png",
+      "talk-5.png",
+      "talk-6.png"
+    ]
+  },
+  "meta": {
+    "app": "https://www.codeandweb.com/texturepacker",
+    "version": "1.0",
+    "image": "talk.png",
+    "format": "RGBA8888",
+    "size": { "w": 505, "h": 1139 },
+    "scale": "1",
+    "smartupdate":
+      "$TexturePacker:SmartUpdate:84e6be0bd20fcc4d5052e485a3abe317:d16ea7bd921feed11d844ba74d4cd951:3d1dc7bdd145e1c49986d2b2962683fc$"
+  }
+}
