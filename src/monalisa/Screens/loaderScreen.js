@@ -32,7 +32,7 @@ export default class loaderScreen extends BasicContainer {
    * 未命名为 play(),以后可能有冲突
    */
   exec() {
-    /*
+    /**
      * 执行顺序
      * 1.FBI页面
      * initLoadingAssets()
