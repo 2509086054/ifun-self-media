@@ -30,7 +30,7 @@
     "no-invalid-regexp": 2,
     "no-dupe-keys": 2,
     "comma-dangle": [2, "never"],
-    "semi":["error","never"],
+    "semi":["error","always"],
     "max-len": ["error", 200],
     "newline-per-chained-call": ["error", { "ignoreChainWithDepth": 2 }],
     "eol-last": "error",
