@@ -33,6 +33,7 @@ this.children = PopToFront(this.children)(TVScreen)
  */
 
 export class Bideo {
+  // eslint-disable-next-line lines-around-comment
   /**
    * Set option
    * H5 video 元素
