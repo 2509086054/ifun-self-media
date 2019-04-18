@@ -34,6 +34,7 @@ this.children = PopToFront(this.children)(TVScreen)
  */
 
 export class Bideo {
+  // eslint-disable-next-line lines-around-comment
   /**
    * Set option
    * H5 video 元素
@@ -109,11 +110,8 @@ export class Bideo {
       this.videoEl.pause();
     };
   }
-  resizeHandler() {
-    alert('==========resize');
-  }
+  resizeHandler() {}
   resizeHandler1() {
-    alert('==========');
     // IE/Edge still don't support object-fit: cover
     if ('object-fit' in document.body.style) return;
 
@@ -172,8 +170,8 @@ export class Bideo {
       var new_width = minW;
       var new_height = Math.ceil(new_width / videoRatio);
     } else {
-      var new_height = minH;
-      var new_width = Math.ceil(new_height * videoRatio);
+      new_height = minH;
+      new_width = Math.ceil(new_height * videoRatio);
     }
 
     this.videoEl.style.width = new_height + 'px';

@@ -94,7 +94,5 @@ export class Bideo {
       this.videoEl.appendChild(source);
     });
   }
-  resizeHandler() {
-    console.log('==========');
-  }
+  resizeHandler() {}
 }

@@ -17,7 +17,7 @@
       "args": "after-used"
     }],
     "no-use-before-define": 2,
-    "no-console": 0,
+    "no-console": "error",
     "no-debugger": 2,
     "no-alert": 2,
     "no-trailing-spaces": 2,

@@ -11,6 +11,7 @@ import Store from '../../Stores/Store';
  * @exports ScaledContainer
  */
 export default class ScaledContainer extends Container {
+  // eslint-disable-next-line lines-around-comment
   /**
    * Set target size
    * @param  {Number} target_w width
@@ -48,9 +49,7 @@ export default class ScaledContainer extends Container {
       newCanvasHeight,
       forceRotation
     } = Store.getState().Renderer;
-    console.log(
-      Store.getState().Renderer.newCanvasWidth + '==resizeHandler==========='
-    );
+    // console.log(Store.getState().Renderer.newCanvasWidth + '==resizeHandler===========');
     // 旋转判断
     let newWidth = newCanvasWidth;
     let newHeight = newCanvasHeight;
@@ -74,7 +73,7 @@ export default class ScaledContainer extends Container {
     this.position.x = offsetX;
     this.position.y = offsetY;
     // console.log(neweight / 2)
-    console.log(initCanvasHeight / 2 * Yratio);
+    // console.log(initCanvasHeight / 2 * Yratio);
     // 根容器自适应新缩放比例
     // 内部的 Sprite 同比例缩放，会有一定的失真
     this.scale = scale;

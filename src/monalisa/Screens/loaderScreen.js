@@ -79,7 +79,7 @@ export default class loaderScreen extends BasicContainer {
         {
           pixi: { alpha: 0.3, ease: Power4.easeOut },
           onUpdate: () => {
-            console.log(FBI.alpha);
+            // console.log(FBI.alpha);
           },
           onComplete: () => {
             // 切换到loading 页面

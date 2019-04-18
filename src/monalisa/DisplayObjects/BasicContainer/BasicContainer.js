@@ -6,6 +6,7 @@ import { Container } from 'pixi.js';
  * @exports BasicContainer
  */
 export default class BasicContainer extends Container {
+  // eslint-disable-next-line lines-around-comment
   /**
    * Set 异步调用方法
    * @return {null}
