@@ -40,7 +40,16 @@ const AppAssets = [
   '/assets/images/monalisa/boad.png',
   '/assets/images/monalisa/wine_barrel.png',
   '/assets/images/monalisa/daojiu.png',
-  '/assets/images/monalisa/storm.png'
+  '/assets/images/monalisa/storm.png',
+  '/assets/images/monalisa/port.png',
+  '/assets/images/monalisa/factory_2.png',
+  '/assets/images/monalisa/Forklift_1.png',
+  '/assets/images/monalisa/Forklift_2.png',
+  '/assets/images/monalisa/Forklift_3.png',
+  '/assets/images/monalisa/Forklift_4.png',
+  '/assets/images/monalisa/truck_1.png',
+  '/assets/images/monalisa/truck_2.png',
+  '/assets/images/monalisa/superman.png'
 ];
 
 export { LoadingAssets, LoadingJson, AppAssets, VideoAssets, AppJson };

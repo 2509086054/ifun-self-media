@@ -18,11 +18,11 @@ import { OldFilmFilter } from '@pixi/filter-old-film';
 /**
  * second Screen
  * 播放盖茨比和露西的对话
- * @exports secondScreen
+ * @exports fifthScreen
  * @extends BasicContainer
  */
 
-export default class secondScreen extends BasicContainer {
+export default class fifthScreen extends BasicContainer {
   constructor() {
     super();
     this.Canvas = {
@@ -159,6 +159,16 @@ export default class secondScreen extends BasicContainer {
     };
     playTimeline();
   }
+
+  /**
+   * 第一段台词
+   * lucy:不会请我喝的也是这种\xA0“\xA0进口酒\xA0”\xA0吧？怒！不相信！
+   * leon:请老妹必须喝好酒
+   * 动画：蒙娜丽莎酒瓶
+   * lucy:呀~~这不是蒙娜丽莎吗，全人类都认识啊，这酒有牌面
+   * leon:而且由于公海上条件有限🛠\n自然环境也不可控🎯\n没办法大规模生产
+   * leon:所以，哥在纽腰港租了一个保税仓\n流水线出产灌装红酒
+   */
 
   async Script1() {
     const leonBubble = this.getChildByName('leonBubble');

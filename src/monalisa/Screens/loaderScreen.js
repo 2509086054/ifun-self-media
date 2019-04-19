@@ -234,7 +234,7 @@ export default class loaderScreen extends BasicContainer {
           onUpdate: () => {},
           onComplete: () => {}
         },
-        '+=1.5'
+        '+=2.5'
       )
       .to(talk, 0.5, {
         pixi: {
@@ -243,7 +243,8 @@ export default class loaderScreen extends BasicContainer {
         },
         onUpdate: () => {},
         onComplete: () => {
-          talk.text = '\n盖茨比在大纽腰\n轰·趴\n精彩马上开始';
+          // 空格使用unicode \u00A0 或 \xA0
+          talk.text = '\n盖茨比在大纽腰\n轰\xA0\xA0趴\n精彩马上开始';
           talk.rotation = 0;
           talk.x = 0;
           // loader 重新赋值,加载整个APP资源

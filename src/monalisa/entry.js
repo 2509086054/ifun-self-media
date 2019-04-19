@@ -25,17 +25,57 @@ const loaderScr = new Screens.loaderScreen();
 root.addChild(loaderScr);
 
 /** */
-const third = new Screens.thirdScreen();
+const fourth = new Screens.fourthScreen();
+loaderScr.onLoaded(() => {
+  fourth.init();
+  root.removeChild(loaderScr);
+  root.addChild(fourth);
+  // 销毁 loaderScr
+  loaderScr.destroy();
+});
+// 定义 fourth 的done()函数
+const fifth = new Screens.fifthScreen();
+fourth.onLoaded(() => {
+  fifth.init();
+  root.removeChild(fourth);
+  root.addChild(fifth);
+  fourth.destroy();
+});
+
+/**
+// 定义loader的done()函数
+const first = new Screens.firstScreen();
 loaderScr.onLoaded(() => {
   // first = new firstScreen()
-  third.init();
+  first.init();
   root.removeChild(loaderScr);
-  root.addChild(third);
-  // first.play()
+  root.addChild(first);
+  first.play();
   // 销毁 loaderScr
   loaderScr.destroy();
 });
 
+// 定义 first 的done()函数
+const second = new Screens.secondScreen();
+first.onLoaded(() => {
+  // second = new secondScreen()
+  second.init();
+  root.addChild(second);
+  root.removeChild(first);
+  first.destroy();
+});
+
+// 定义 second 的done()函数
+const third = new Screens.thirdScreen();
+second.onLoaded(() => {
+  // second = new secondScreen()
+  third.init();
+  root.addChild(third);
+  root.removeChild(second);
+  second.destroy();
+});
+
+// 定义 third 的done()函数
 const fourth = new Screens.fourthScreen();
 third.onLoaded(() => {
   fourth.init();
@@ -43,45 +83,6 @@ third.onLoaded(() => {
   root.addChild(fourth);
   third.destroy();
 });
-
-/*
-// 定义loader的done()函数
-const first = new Screens.firstScreen()
-loaderScr.onLoaded(() => {
-  // first = new firstScreen()
-  first.init()
-  root.removeChild(loaderScr)
-  root.addChild(first)
-  first.play()
-  // 销毁 loaderScr
-  loaderScr.destroy()
-})
-
-// 定义 first 的done()函数
-const second = new Screens.secondScreen()
-first.onLoaded(() => {
-  // second = new secondScreen()
-  second.init()
-  root.addChild(second)
-  root.removeChild(first)
-  first.destroy()
-})
-
-// 定义 second 的done()函数
-const third = new Screens.thirdScreen()
-second.onLoaded(() => {
-  // second = new secondScreen()
-  third.init()
-  root.addChild(third)
-  root.removeChild(second)
-  second.destroy()
-})
-
-// 定义 third 的done()函数
-third.onLoaded(() => {
-  root.removeChild(third)
-  third.destroy()
-})
 */
 app.start();
 // Listen for animate update

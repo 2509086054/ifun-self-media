@@ -269,7 +269,8 @@ export default class thirdScreen extends BasicContainer {
               leonBubble.visible = true;
             },
             onComplete: () => {
-              leonMsg.text = '🤴因为哥是大纽腰\n最早做“公海灌装”红酒的大BOSS🤴';
+              leonMsg.text =
+                '🤴因为哥是大纽腰\n最早做\xA0“\xA0公海灌装\xA0”\xA0红酒的大BOSS🤴';
             }
           },
           '+=2'
@@ -283,7 +284,7 @@ export default class thirdScreen extends BasicContainer {
               return resolve();
             }
           },
-          '+=2.5'
+          '+=3.5'
         );
     }); // Promise 对象
   } // this.Script1()
@@ -526,7 +527,6 @@ export default class thirdScreen extends BasicContainer {
               leonBubble.visible = true;
             },
             onComplete: () => {
-              // leonMsg.text = '脑子是个好东西，公海灌装，工作条件有限🛠\n自然环境也不可控🎯\n没办法大规模生产'
               leonMsg.text = '赚钱那是相当的容易😎\n可就有一点不好🤦🤦';
               return resolve();
             }
@@ -615,7 +615,7 @@ export default class thirdScreen extends BasicContainer {
               stormBubble.visible = true;
             }
           },
-          '+=2'
+          '+=3'
         )
         .to(
           storm,
@@ -689,6 +689,12 @@ export default class thirdScreen extends BasicContainer {
     bg.alpha = 0.5;
     this.addChild(bg);
 
+    TweenLite.to(bg, 0.5, {
+      pixi: {
+        tint: 0x7d7979, // 蒙板着色,灰色
+        ease: Bounce.easeOut
+      }
+    });
     // 创建滤镜
     let filter = new OldFilmFilter({
       sepia: 0, // 0.3
@@ -707,6 +713,7 @@ export default class thirdScreen extends BasicContainer {
     filter.seed = Math.random();
     this.activeOldFilm = true;
     // requestAnimationFrame(this.animate.bind(this))
+
     // 滤镜效果渐变
     TweenLite.to(
       filter,

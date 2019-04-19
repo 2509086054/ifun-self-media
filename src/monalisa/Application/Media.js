@@ -65,9 +65,5 @@ export default class Media extends Application {
     this.renderer.resize(window.innerWidth, window.innerHeight);
     // 更新状态
     Store.dispatch(resize());
-    console.log(
-      Store.getState().Renderer.newCanvasWidth +
-        '==resizeHandler2.newCanvasWidth'
-    );
   }
 }

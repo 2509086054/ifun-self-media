@@ -1,19 +1,13 @@
 import BasicContainer from '../DisplayObjects/BasicContainer/BasicContainer';
-import { Text, TextStyle, Texture, Sprite, Graphics } from 'pixi.js';
-import { loader, WRAP_MODES, filters } from 'pixi.js';
+import { Text, TextStyle, Texture, Sprite } from 'pixi.js';
+import { loader } from 'pixi.js';
 import { path } from '../Constants/AssetsConstants';
 import Store from '../Stores/Store';
-import {
-  TweenLite,
-  TimelineLite,
-  TimelineMax,
-  Bounce,
-  Power2
-} from 'gsap/TweenMax';
+import { TweenLite, TimelineMax, Bounce, Power2 } from 'gsap/TweenMax';
 // eslint-disable-next-line
 import { PixiPlugin } from 'gsap/PixiPlugin';
-import { ShockwaveFilter } from '@pixi/filter-shockwave';
 import { OldFilmFilter } from '@pixi/filter-old-film';
+import { PopToFront } from '../utils';
 
 /**
  * fourth Screen
@@ -33,6 +27,7 @@ export default class fourthScreen extends BasicContainer {
     this.scaleX = this.scaleY = 0;
     // animate 控制开关
     this.active = false;
+    this.i = 1;
     this.activeOldFilm = false;
     // 定义文字样式
     this.textStyle = new TextStyle({
@@ -59,7 +54,7 @@ export default class fourthScreen extends BasicContainer {
   /**
    * 初始化函数
    * 1.白色背景
-   * 2.大海，两个 filters 特效
+   * 2.码头、工厂、铲车
    * 3.两个人物头像
    * 4.人物对话框
    */
@@ -81,21 +76,50 @@ export default class fourthScreen extends BasicContainer {
     loadingbg.name = 'loadingbg';
     this.addChild(loadingbg);
 
+    // 港口码头
+    const port = new Sprite(this.res[path + 'port.png'].texture);
+    port.name = 'port';
+    port.anchor.set(0, 1);
+    port.width = this.Canvas.initCanvasWidth * 0.4;
+    port.height = this.Canvas.initCanvasHeight / 2 + 20;
+    port.x = -10 * this.scaleX;
+    port.y = this.Canvas.initCanvasHeight;
+    this.addChild(port);
+
+    // 工厂
+    const factory = new Sprite(this.res[path + 'factory_2.png'].texture);
+    factory.name = 'factory';
+    factory.anchor.set(1, 0.5); // factory 从底部中间位置拔地而起
+    factory.width = this.Canvas.initCanvasWidth * 0.45;
+    // factory.height = this.Canvas.initCanvasHeight / 3 + 20;
+    factory.height = 0; // 在animateScript1()中拔地而起
+    factory.x = 580 * this.scaleX + factory.width / 2;
+    factory.y = this.Canvas.initCanvasHeight / 3;
+    this.addChild(factory);
+
+    // 工厂先不出现
+    // factory.visible = false;
+
     // 加入人物
+    // 人物和泡泡的位置与第3屏对比，都是翻转的
+    // scale.x *= -1;
     const Leonardo = new Sprite(this.res[path + 'li2.png'].texture);
     const lucy = new Sprite(this.res[path + 'lu2.png'].texture);
     Leonardo.width = lucy.width = 50 * this.scaleX;
     Leonardo.height = lucy.height = 70 * this.scaleY;
-    Leonardo.anchor.set(0, 1);
-    Leonardo.x = this.Canvas.initCanvasWidth - 100 * this.scaleX;
-    Leonardo.scale.x *= -1;
-    Leonardo.rotation -= Math.PI / 180 * 25;
-    Leonardo.name = 'Leonardo';
+
     lucy.anchor.set(0, 1);
-    lucy.x = 80 * this.scaleX;
-    Leonardo.y = 60 * this.scaleY;
+    lucy.x = this.Canvas.initCanvasWidth - 100 * this.scaleX;
+    lucy.scale.x *= -1;
+    // lucy.rotation -= Math.PI / 180 * 25;
+    lucy.name = 'Leonardo';
+
+    Leonardo.anchor.set(0, 1);
+    Leonardo.x = 80 * this.scaleX;
+    Leonardo.rotation = Math.PI / 180 * 25;
     lucy.y = 75 * this.scaleY;
-    lucy.name = 'lucy';
+    Leonardo.y = 60 * this.scaleY;
+    Leonardo.name = 'lucy';
     this.addChild(Leonardo);
     this.addChild(lucy);
 
@@ -105,8 +129,9 @@ export default class fourthScreen extends BasicContainer {
     lucyBubble.anchor.set(0);
     lucyBubble.width = this.Canvas.initCanvasWidth * 0.65;
     lucyBubble.height = this.Canvas.initCanvasHeight * 0.3;
-    lucyBubble.x = 130 * this.scaleX;
+    lucyBubble.x = 670 * this.scaleX;
     lucyBubble.y = 50 * this.scaleY;
+    lucyBubble.scale.x *= -1;
     lucyBubble.name = 'lucyBubble';
     // 初始化时不显示，在 playScript()中定义动画
     lucyBubble.visible = false;
@@ -117,8 +142,9 @@ export default class fourthScreen extends BasicContainer {
     leonBubble.anchor.set(1, 0);
     leonBubble.width = lucyBubble.width;
     leonBubble.height = lucyBubble.height;
-    leonBubble.x = 670 * this.scaleX;
+    leonBubble.x = 130 * this.scaleX;
     leonBubble.y = lucyBubble.y;
+    leonBubble.scale.x *= -1;
     leonBubble.name = 'leonBubble';
     // 初始化时不显示，在 playScript()中定义动画
     leonBubble.visible = false;
@@ -127,9 +153,10 @@ export default class fourthScreen extends BasicContainer {
     // 加入对话文字
     const lucyMsg = new Text('', this.textStyle);
     lucyMsg.anchor.set(0);
+    lucyMsg.scale.x *= -1;
     lucyMsg.width = lucyBubble.texture.width * 0.89;
     lucyMsg.height = lucyBubble.texture.height * 0.5 * 1.8;
-    lucyMsg.x = 10;
+    lucyMsg.x = lucyBubble.texture.width;
     lucyMsg.y = 40;
     lucyMsg.name = 'lucyMsg';
     // 加入泡泡sprite时，会自动缩放
@@ -138,9 +165,10 @@ export default class fourthScreen extends BasicContainer {
 
     const leonMsg = new Text('', this.textStyle);
     leonMsg.anchor.set(0, 1);
+    leonMsg.scale.x *= -1;
     leonMsg.width = leonBubble.texture.width * 0.89;
     leonMsg.height = leonBubble.texture.height * 0.5 * 1.8;
-    leonMsg.x = -leonBubble.texture.width;
+    leonMsg.x = 10;
     leonMsg.y = leonBubble.texture.height;
     leonMsg.name = 'leonMsg';
     // 加入泡泡sprite时，会自动缩放
@@ -152,22 +180,11 @@ export default class fourthScreen extends BasicContainer {
   } // this.init()
 
   /**
-   * 剧本时间线
-   */
-  playScript() {
-    const playTimeline = async () => {
-      // await this.Script1()
-      // await this.animateScript1()
-      // await this.animateScript2()
-      // this.OldFilmFilter()
-    };
-    playTimeline();
-  }
-
-  /**
    * 第一段台词
-   * lucy:为什么你的酒\n这么便宜啊
-   * leon:因为哥是大纽腰\n最早做“公海灌装”红酒的大BOSS
+   * lucy:说的冠冕堂皇\n其实就是在公海上拿色素兑假酒\n鄙视你
+   * leon:哥是负责任的私酒商，好吗？\n酒是真酒，只不过是散装的
+   * leon:而且由于公海上条件有限🛠\n自然环境也不可控🎯\n没办法大规模生产
+   * leon:所以，哥在纽腰港租了一个保税仓\n流水线出产灌装红酒
    */
   async Script1() {
     const leonBubble = this.getChildByName('leonBubble');
@@ -198,7 +215,8 @@ export default class fourthScreen extends BasicContainer {
               lucyBubble.visible = true;
             },
             onComplete: () => {
-              lucyMsg.text = '为什么你的酒🍷\n这么便宜啊😱😱😱';
+              lucyMsg.text =
+                '说的冠冕堂皇\n其实就是在公海上拿色素兑假酒\n鄙视你👿👿👿';
             }
           }
         )
@@ -222,17 +240,54 @@ export default class fourthScreen extends BasicContainer {
               leonBubble.visible = true;
             },
             onComplete: () => {
-              leonMsg.text = '🤴因为哥是大纽腰\n最早做“公海灌装”红酒的大BOSS🤴';
+              leonMsg.text =
+                '哥，是一个高尚的人，好吗👻？\n酒是真酒，只不过是散装的😅😅😅';
             }
           },
-          '+=2'
+          '+=4'
+        )
+        .to(
+          leonBubble,
+          0.5,
+          {
+            pixi: {
+              // rotation: 0, // 文字水平
+              ease: Bounce.easeOut
+            },
+            onStart: () => {
+              lucyMsg.text = '';
+            },
+            onComplete: () => {
+              leonMsg.text =
+                '而且由于公海上条件有限🛠\n自然环境也不可控🎯\n没办法大规模生产';
+            }
+          },
+          '+=5'
+        )
+        .to(
+          leonBubble,
+          0.5,
+          {
+            pixi: {
+              // rotation: 0, // 文字水平
+              ease: Bounce.easeOut
+            },
+            onStart: () => {
+              lucyMsg.text = '';
+            },
+            onComplete: () => {
+              leonMsg.text =
+                '所以，哥在纽腰港租了一个保税仓\n流水线出产灌装红酒';
+            }
+          },
+          '+=5'
         )
         .to(
           leonMsg,
           0,
           {
             onComplete: () => {
-              leonBubble.visible = false;
+              // leonBubble.visible = false;
               return resolve();
             }
           },
@@ -242,393 +297,222 @@ export default class fourthScreen extends BasicContainer {
   } // this.Script1()
 
   /**
+   * Main animation loop, updates animation store
+   * @return {null}
+   */
+  animate() {
+    if (this.active) {
+    }
+    if (this.activeOldFilm) {
+      // 旧电影 filter 动画
+      this.getChildByName('bg3_Transparent').filters[0].seed = Math.random();
+    }
+    requestAnimationFrame(this.animate.bind(this));
+  }
+
+  /**
    * 公海灌装
    * 在 this.Script1() 结束后执行
-   * 1.初始化精灵：货轮、小木船、橡木桶、对话框
+   * 1.初始化
    * 2、剧本：
-   * leon:先用货轮从国外运输散装红酒\n到大纽腰附近的公海㊙\n天王老子也管不着的地界
-   * 动画：出现货轮
-   * 动画：货轮航行到近镜
-   * leon:在公海上灌装成瓶\n再用大飞偷运进城
-   * 动画：出现小木船，航行到货轮附近
-   * 动画：装货，橡木桶
-   * 动画：小木船出现文字 “走你”
+   * leon:购卖灌装设备生产线\n把仓库改装成工厂
+   * 动画：出现工厂
+   * leon:散装红酒正规进口\n再拉到工厂成批灌装
+   * 动画：出现铲车，在港口和工厂之间行进
    * leon:赚钱那是相当的容易\n可就有一点不好
    * 后接台风动画
    */
   async animateScript1() {
-    const sea = this.getChildByName('sea');
+    const factory = this.getChildByName('factory');
     const leonBubble = this.getChildByName('leonBubble');
     const leonMsg = leonBubble.getChildByName('leonMsg');
 
-    // 货轮
-    const oceanFreight = new Sprite(
-      this.res[path + 'ocean_freight1.png'].texture
-    );
+    // 铲车1
+    const Forklift_1 = new Sprite(this.res[path + 'Forklift_1.png'].texture);
+    Forklift_1.name = 'Forklift_1';
+    Forklift_1.width = 133 * 0.5 * this.scaleX;
+    Forklift_1.height = 137 * 0.5 * this.scaleY;
+    Forklift_1.x = 670 * this.scaleX;
+    Forklift_1.y = factory.y + 75 * this.scaleY;
+    this.addChild(Forklift_1);
 
-    oceanFreight.anchor.set(1, 0.5); // 锚点在船头中间位置，感觉船在海中
-    // oceanFreight.scale.x = 0.15
-    // oceanFreight.scale.y = 0.65 // 船头朝前
-    // oceanFreight.scale.x *= -0.5
-    oceanFreight.width = sea.width / 3 * this.scaleX;
-    oceanFreight.height = sea.height / 3 * this.scaleY;
-    oceanFreight.visible = false;
-    oceanFreight.name = 'oceanFreight';
-    this.addChild(oceanFreight);
+    // 铲车2
+    const Forklift_2 = new Sprite(this.res[path + 'Forklift_2.png'].texture);
+    Forklift_2.name = 'Forklift_2';
+    Forklift_2.width = 133 * 0.5 * this.scaleX;
+    Forklift_2.height = 137 * 0.5 * this.scaleY;
+    Forklift_2.x = 340;
+    Forklift_2.y = 400 * this.scaleY;
+    Forklift_2.scale.x *= -1;
+    this.addChild(Forklift_2);
 
-    // 小木船
-    const boad = new Sprite(this.res[path + 'boad.png'].texture);
-    boad.anchor.set(0.5); // 锚点在船头中间位置，感觉船在海中
-    boad.scale.x *= 1.2;
-    boad.scale.y *= 1.2;
-    boad.x = this.Canvas.initCanvasWidth - 30 * this.scaleX;
-    boad.y = this.Canvas.initCanvasHeight + 50 * this.scaleY;
-    boad.width = sea.width * 0.35;
-    boad.height = sea.height * 0.35;
-    boad.name = 'boad';
-    this.addChild(boad);
+    // 货车1
+    const truck_1 = new Sprite(this.res[path + 'truck_2.png'].texture);
+    truck_1.name = 'truck_1';
+    truck_1.width = 500 * 0.5 * this.scaleX;
+    truck_1.height = 400 * 0.5 * this.scaleY;
+    truck_1.x = 440 * this.scaleX;
+    truck_1.y = 150 * this.scaleY;
+    truck_1.scale.x *= -1;
+    this.addChild(truck_1);
 
-    // 橡木桶
-    const oak = new Sprite(this.res[path + 'wine_barrel.png'].texture);
-    oak.anchor.set(0.5); // 锚点在船头中间位置，感觉船在海中
-    oak.x = -boad.width / 2 + 10;
-    oak.y = -200;
-    oak.width = boad.width * 1.5;
-    oak.height = boad.height * 1.5;
-    oak.visible = false;
-    oak.name = 'oak';
-    boad.addChild(oak);
+    // 货车2
+    const truck_2 = new Sprite(this.res[path + 'truck_1.png'].texture);
+    truck_2.name = 'truck_2';
+    truck_2.width = 500 * 0.5 * this.scaleX;
+    truck_2.height = 400 * 0.5 * this.scaleY;
+    truck_2.x = 480 * this.scaleX;
+    truck_2.y = 380 * this.scaleY;
+    this.addChild(truck_2);
 
-    // "走你"对话框
-    const goodByeTexture = Texture.fromFrame('bubble_5.png');
+    // 全部不显示
+    Forklift_1.visible = Forklift_2.visible = truck_1.visible = truck_2.visible = false;
+
+    // 货车对话框
+    const goodByeTexture = Texture.fromFrame('bubble_6.png');
     const goodByeBubble = new Sprite(goodByeTexture);
     goodByeBubble.anchor.set(0.3, 1);
     goodByeBubble.width = this.Canvas.initCanvasWidth * 0.2;
     goodByeBubble.height = this.Canvas.initCanvasHeight * 0.2;
-    // 在装船后赋值
-    // goodByeBubble.x = boad.x - 50 * this.scaleX
-    // goodByeBubble.y = boad.y
+
+    // 货车说话
+    goodByeBubble.x = truck_2.x + 30 * this.scaleX;
+    goodByeBubble.y = truck_2.y + 30 * this.scaleY;
     goodByeBubble.name = 'goodByeBubble';
     goodByeBubble.visible = false;
     this.addChild(goodByeBubble);
 
     // 加入对话文字
-    const goodByeMsg = new Text('👌👌走你💃💃', this.textStyle);
+    const goodByeMsg = new Text(
+      '💰💰\xA0hurry\xA0\xA0up\xA0💰💰\n挤死😈正规红酒😈',
+      this.textStyle
+    );
     goodByeMsg.anchor.set(0);
-    goodByeMsg.width = goodByeBubble.texture.width * 0.89;
-    goodByeMsg.height = goodByeBubble.texture.height * 0.5;
-    goodByeMsg.x = -50;
-    goodByeMsg.y = -160;
-    goodByeMsg.name = 'lucyMsg';
+    goodByeMsg.width = goodByeBubble.texture.width * 1.2;
+    goodByeMsg.height = goodByeBubble.texture.height * 1.2;
+    goodByeMsg.x = -80;
+    goodByeMsg.y = -230;
     // 加入泡泡sprite时，会自动缩放
     // 尺寸、位置都要按父容器原图来测量，注意父容器的原点
     goodByeBubble.addChild(goodByeMsg);
 
-    // 定义货轮的运动轨迹
+    // 定义叉车的运动轨迹
     let curvedWaypoints = [
       // First curve
       [
         // { x: 100 * this.scaleX, y: 300 * this.scaleY },
-        { x: 750 * this.scaleX, y: 350 * this.scaleY },
-        { x: 580 * this.scaleX, y: 398 * this.scaleY },
-        { x: 680 * this.scaleX, y: 300 * this.scaleY }
+        { x: 550 * this.scaleX, y: 450 * this.scaleY },
+        { x: 400 * this.scaleX, y: 350 * this.scaleY }
+        // { x: 680 * this.scaleX, y: 300 * this.scaleY }
       ],
       // Second curve
       [
         { x: 300 * this.scaleX, y: 550 * this.scaleY },
-        { x: 150 * this.scaleX, y: 458 * this.scaleY },
-        { x: 250 * this.scaleX, y: 410 * this.scaleY }
+        { x: 510 * this.scaleX, y: 458 * this.scaleY }
+        // { x: 250 * this.scaleX, y: 410 * this.scaleY }
       ]
     ];
     const tl = new TimelineMax({ delay: 0 });
+    const tagetHeight = this.Canvas.initCanvasHeight / 3 + 20;
+
     // 返回 Promise 对象
     return new Promise(resolve => {
       tl
         .fromTo(
-          leonBubble,
-          0.5,
+          factory,
+          2,
           {
             pixi: {
-              // rotation: 90, // 文字垂直
+              height: 0, // 文字垂直
               ease: Bounce.easeIn
             }
           },
           {
             pixi: {
-              // rotation: 0, // 文字水平
+              height: tagetHeight, // 文字水平
               ease: Bounce.easeOut
             },
             onStart: () => {
               leonMsg.text = '';
-              leonBubble.visible = true;
+              leonBubble.visible = false;
             },
             onComplete: () => {
-              leonMsg.text =
-                '🦊🦊先用货轮从国外运输散装红酒\n到大纽腰附近的公海㊙\n天王老子也管不着的地界🚨';
+              // 车辆全部显示
+              Forklift_1.visible = Forklift_2.visible = truck_1.visible = truck_2.visible = true;
             }
           },
-          '+=0.5'
+          '+=1.5'
         )
-        .to(oceanFreight, 1, {
-          // 船头朝前
-          onUpdate: () => {
-            // oceanFreight.scale.x += 0.015
-          },
-          onComplete: () => {
-            oceanFreight.x = this.Canvas.initCanvasWidth / 2; // 100 * this.scaleX
-            oceanFreight.y =
-              this.Canvas.initCanvasHeight / 2 + 10 * this.scaleY;
-            oceanFreight.visible = true;
-          }
-        })
         .to(
-          oceanFreight,
+          Forklift_1,
           4,
           {
-            // 大船轨迹
             bezier: {
               type: 'soft',
               values: curvedWaypoints[0],
               autoRotate: false
             },
             ease: Power2.easeInOut,
-            onUpdate: () => {
-              oceanFreight.scale.x += 0.001;
-              oceanFreight.scale.y += 0.001;
-            },
-            onComplete: () => {}
+            onUpdate: () => {}
           },
-          '+=2'
-        )
-        .fromTo(
-          leonBubble,
-          0.5,
-          {
-            pixi: {
-              // rotation: 90, // 文字垂直
-              ease: Bounce.easeIn
-            }
-          },
-          {
-            pixi: {
-              // rotation: 0, // 文字水平
-              ease: Bounce.easeOut
-            },
-            onStart: () => {
-              leonMsg.text = '';
-              leonBubble.visible = true;
-            },
-            onComplete: () => {
-              leonMsg.text = '在公海上灌装成瓶🍷\n再用大飞🚤偷运进城🏰';
-            }
-          },
-          '+=2'
+          '+=0.5'
         )
         .to(
-          boad,
+          Forklift_2,
           4,
           {
-            // 小木船轨迹
             bezier: {
               type: 'soft',
               values: curvedWaypoints[1],
               autoRotate: false
             },
-            ease: Power2.easeInOut,
-            onUpdate: () => {},
-            onComplete: () => {
-              boad.scale.x *= -1;
-            }
-          },
-          '+=2'
-        )
-        .to(
-          oak,
-          4,
-          {
-            // 装货，橡木桶
-            pixi: { y: 0 },
-            ease: Power2.easeInOut,
+            ease: Power2.easeOut,
             onStart: () => {
-              oak.visible = true;
-            },
-            onComplete: () => {
-              goodByeBubble.x = boad.x - 70 * this.scaleX;
-              goodByeBubble.y = boad.y - 50 * this.scaleY;
+              // 气泡出现
               goodByeBubble.visible = true;
             }
           },
-          '+=2'
+          '+=0.5'
         )
-        .fromTo(
-          leonBubble,
-          0.5,
+        .to(
+          truck_2,
+          4,
           {
             pixi: {
-              // rotation: 90, // 文字垂直
-              ease: Bounce.easeIn
-            }
-          },
-          {
-            pixi: {
-              // rotation: 0, // 文字水平
-              ease: Bounce.easeOut
+              x: this.Canvas.initCanvasWidth + 10,
+              y: this.Canvas.initCanvasHeight / 2
             },
+            ease: Power2.easeOut,
             onStart: () => {
-              leonMsg.text = '';
-              leonBubble.visible = true;
+              goodByeBubble.visible = false;
             },
             onComplete: () => {
-              // leonMsg.text = '脑子是个好东西，公海灌装，工作条件有限🛠\n自然环境也不可控🎯\n没办法大规模生产'
-              leonMsg.text = '赚钱那是相当的容易😎\n可就有一点不好🤦🤦';
               return resolve();
             }
           },
-          '+=2'
+          '+=0.5'
         );
     }); // Promise 对象
   } // animateScript1
 
   /**
-   * 台风过处，寸草不生
    * 在 this.animateScript1() 结束后执行
-   * 1、初始化：台风和对话框
+   * 1、初始化：蒙板和对话框
    * 2、剧本：
-   * 动画：台风出现
-   * 动画：台风对话框出现“台风过处\n鸡犬不留”
-   * 动画：台风轨迹，行进中卷起货轮和小木船
-   * 动画：台风对话框出现“卷走你\n嘻嘻”
+   * 动画：蒙板出现
+   * 动画：蒙板着色
+   * leon：这样做起来，各种证照齐全\n欧盟认证等级，绝对是真酒
+   * leon:再注册一个洋品牌，一瓶酒成本也就10多块钱\n零售50/60元钱\n大纽腰人民喜欢的不要不要的
+   * lucy:但是，散酒在海上漂几个月，没有真空包装\n灌装车间也没有无菌环境\n这个酒的质量不行吧
+   * leon:饿...😅😅😅~~~\n为了赚钱，💝➡🖤只能把良心先别在前列腺上了💝➡🖤
    */
   async animateScript2() {
     // 涉及到的精灵
     const leonBubble = this.getChildByName('leonBubble');
-    const oceanFreight = this.getChildByName('oceanFreight');
-    const boad = this.getChildByName('boad');
-    const goodByeBubble = this.getChildByName('goodByeBubble');
+    const leonMsg = leonBubble.getChildByName('leonMsg');
+    const lucyBubble = this.getChildByName('lucyBubble');
+    const lucyMsg = lucyBubble.getChildByName('lucyMsg');
 
-    // 台风
-    const storm = new Sprite(this.res[path + 'storm.png'].texture);
-    storm.anchor.set(0.5, 1); // 锚点在台风底部中间位置
-    storm.x = 20 * this.scaleX;
-    storm.y = 450 * this.scaleY;
-    storm.width = this.Canvas.initCanvasWidth * 0.5;
-    storm.height = this.Canvas.initCanvasHeight * 0.6;
-    storm.visible = false;
-    this.addChild(storm);
-
-    // 台风对话框
-    const stormTexture = Texture.fromFrame('bubble_6.png');
-    const stormBubble = new Sprite(stormTexture);
-    stormBubble.anchor.set(1);
-    stormBubble.width = this.Canvas.initCanvasWidth * 0.25;
-    stormBubble.height = this.Canvas.initCanvasHeight * 0.25;
-    // 泡泡翻转
-    stormBubble.scale.x *= -1;
-    stormBubble.x = 160 * this.scaleX;
-    stormBubble.y = 230 * this.scaleY;
-    stormBubble.name = 'stormBubble';
-    stormBubble.visible = false;
-    this.addChild(stormBubble);
-
-    // 加入对话文字
-    const stormMsg = new Text('台风过处\n鸡犬不留🐔🐶❌', this.textStyle);
-    stormMsg.anchor.set(0);
-    // 跟随泡泡，做镜像翻转
-    stormMsg.scale.x *= -1;
-    stormMsg.width = stormBubble.texture.width * 0.89;
-    stormMsg.height = stormBubble.texture.height * 1.05;
-    stormMsg.x = -20;
-    stormMsg.y = -250;
-    stormMsg.name = 'stormMsg';
-    // 加入泡泡sprite时，会自动缩放
-    // 尺寸、位置都要按父容器原图来测量，注意父容器的原点
-    stormBubble.addChild(stormMsg);
-
-    // 台风路径
-    let stormPoints = [
-      { x: 150 * this.scaleX, y: 300 * this.scaleY },
-      { x: 320 * this.scaleX, y: 550 * this.scaleY },
-      { x: 560 * this.scaleX, y: 498 * this.scaleY },
-      { x: 680 * this.scaleX, y: 450 * this.scaleY }
-    ];
-    const tl = new TimelineMax({ delay: 0 });
-    // 返回 Promise 对象
-    return new Promise(resolve => {
-      tl
-        .to(
-          storm,
-          1,
-          {
-            // 台风出现
-            pixi: {},
-            ease: Power2.easeInOut,
-            onComplete: () => {
-              leonBubble.visible = goodByeBubble.visible = false;
-              storm.visible = true;
-              stormBubble.visible = true;
-            }
-          },
-          '+=2'
-        )
-        .to(
-          storm,
-          4,
-          {
-            // 台风轨迹
-            bezier: { type: 'soft', values: stormPoints, autoRotate: false },
-            // pixi: {x: 620 * this.scaleX },
-            ease: Power2.easeOut,
-            onStart: () => {
-              stormBubble.visible = false;
-              oceanFreight.anchor.set(0.5);
-              boad.anchor.set(0.5);
-            },
-            onUpdate: () => {
-              oceanFreight.rotation += 0.06;
-              oceanFreight.x += 0.2;
-              oceanFreight.y -= 0.2;
-
-              boad.rotation += 0.05;
-              boad.x += 0.2;
-              boad.y -= 0.2;
-            },
-            onComplete: () => {
-              stormBubble.visible = true;
-              stormBubble.scale.x *= -1; // 镜像翻转回正常
-              stormBubble.x = 500 * this.scaleX;
-              stormBubble.y = 200 * this.scaleY;
-              stormMsg.text = '🌀🌀卷走你🌀🌀\n嘻嘻😆😆😆';
-              stormMsg.scale.x *= -1;
-              stormMsg.x = -300;
-              oceanFreight.visible = boad.visible = false;
-            }
-          },
-          '+=2'
-        )
-        .to(
-          stormMsg,
-          1,
-          {
-            // 🌀🌀卷走你🌀🌀 停留2秒
-            pixi: {},
-            ease: Power2.easeInOut,
-            onComplete: () => {
-              return resolve();
-            }
-          },
-          '+=2'
-        );
-    }); // Promise 对象
-  } // this.animateScript2()
-
-  /**
-   * 加入OldFilmFilter滤镜
-   * API文档：
-   * https://pixijs.io/pixi-filters/docs/PIXI.filters.OldFilmFilter.html
-   * DEMO:
-   * http://pixijs.io/pixi-filters/tools/demo/
-   */
-  OldFilmFilter() {
     // 添加透明蒙板
     /**
      * 在容器上覆盖一层透明蒙板
@@ -642,25 +526,185 @@ export default class fourthScreen extends BasicContainer {
     bg.alpha = 0.5;
     this.addChild(bg);
 
+    // 将2个头像 Z-index 调整到最前
+    this.children = PopToFront(this.children)(this.getChildByName('Leonardo'));
+    this.children = PopToFront(this.children)(this.getChildByName('lucy'));
+    // 将对话框 Z-index 调整到最前
+    this.children = PopToFront(this.children)(leonBubble);
+    this.children = PopToFront(this.children)(lucyBubble);
+
+    // 动画时间线
+    const tl = new TimelineMax({ delay: 0 });
+    // 返回 Promise 对象
+    return new Promise(resolve => {
+      tl
+        .to(
+          bg,
+          0.5,
+          {
+            pixi: {
+              tint: 0x7d7979, // 蒙板着色，灰色
+              ease: Bounce.easeOut
+            }
+          },
+          '+=1'
+        )
+        .fromTo(
+          leonBubble,
+          0.5,
+          {
+            pixi: {
+              ease: Bounce.easeIn
+            }
+          },
+          {
+            pixi: {
+              ease: Bounce.easeOut
+            },
+            onStart: () => {
+              lucyBubble.visible = false;
+              lucyMsg.text = '';
+              leonBubble.visible = true;
+              leonMsg.text =
+                '这样做起来，各种证照齐全📜\n欧盟认证等级📝，绝对是真酒👌💪';
+            },
+            onComplete: () => {}
+          },
+          '+=1'
+        )
+        .to(
+          leonBubble,
+          0.5,
+          {
+            pixi: {
+              ease: Bounce.easeOut
+            },
+            onStart: () => {
+              lucyMsg.text = '';
+              leonMsg.text =
+                '再注册一个洋品牌，一瓶酒成本也就10多块钱\n零售50/60元钱💴\n大纽腰人民喜欢的不要不要的💸💰';
+            },
+            onComplete: () => {}
+          },
+          '+=5'
+        )
+        .fromTo(
+          lucyBubble,
+          0.5,
+          {
+            pixi: {
+              ease: Bounce.easeIn
+            }
+          },
+          {
+            pixi: {
+              ease: Bounce.easeOut
+            },
+            onStart: () => {
+              lucyMsg.text = '';
+              lucyBubble.visible = true;
+              leonBubble.visible = false;
+              lucyMsg.text =
+                '但是，散酒在海上漂几个月，没有真空包装🎈🎈\n⛑️👣灌装车间也没有无菌环境👣⛑️\n这个酒的质量不行吧💩💩💩';
+            },
+            onComplete: () => {}
+          },
+          '+=5'
+        )
+        .to(
+          leonBubble,
+          0.5,
+          {
+            pixi: {
+              ease: Bounce.easeOut
+            },
+            onStart: () => {
+              leonMsg.text = '';
+              lucyBubble.visible = false;
+              leonBubble.visible = true;
+              leonMsg.text =
+                '饿...\xA0\xA0😅😅😅\n为了赚钱，💝➡🖤只能先把\xA0良心\xA0别在\xA0前列腺\xA0上了💝➡🖤';
+            },
+            onComplete: () => {}
+          },
+          '+=6'
+        )
+        .to(
+          leonMsg,
+          0,
+          {
+            onComplete: () => {
+              // leonBubble.visible = false;
+              return resolve();
+            }
+          },
+          '+=6'
+        );
+    }); // Promise 对象
+  } // this.animateScript2()
+
+  /**
+   * 加入OldFilmFilter滤镜
+   * API文档：
+   * https://pixijs.io/pixi-filters/docs/PIXI.filters.OldFilmFilter.html
+   * DEMO:
+   * http://pixijs.io/pixi-filters/tools/demo/
+   */
+  OldFilmFilter() {
     // 创建滤镜
     let filter = new OldFilmFilter({
       sepia: 0, // 0.3
       noise: 0, // 0.3
       scratch: 0, // 0.5
       scratchDensity: 0, // 0.3
+      scratchWidth: 1.5,
       // 以下设置后，vignetting 从0-1，屏幕体现圆形消失效果
       vignettingBlur: 0,
       vignettingAlpha: 1,
       vignetting: 0
     });
 
-    // this.getChildByName('bg3_Transparent')
     this.getChildByName('bg3_Transparent').filters = [filter]; // 蒙板上加 filter
     // 加入动态效果
     filter.seed = Math.random();
     this.activeOldFilm = true;
-    // requestAnimationFrame(this.animate.bind(this))
-    // 滤镜效果渐变
+    requestAnimationFrame(this.animate.bind(this));
+
+    // 加入超人
+    const superman = new Sprite(this.res[path + 'superman.png'].texture);
+    superman.anchor.set(0.5);
+    superman.width = this.Canvas.initCanvasWidth * 0.4;
+    superman.height = this.Canvas.initCanvasHeight * 0.8;
+    superman.x = this.Canvas.initCanvasWidth / 2;
+    superman.y = this.Canvas.initCanvasHeight / 2;
+    this.addChild(superman);
+
+    // 泡泡
+    const bubbleTexture = Texture.fromFrame('tips-0.png');
+    const Bubble = new Sprite(bubbleTexture);
+    Bubble.anchor.set(0, 1);
+    Bubble.width = this.Canvas.initCanvasWidth / 4;
+    Bubble.height = this.Canvas.initCanvasHeight / 3;
+    Bubble.x = superman.x + superman.width / 5;
+    Bubble.y = superman.y - superman.height / 5;
+
+    // Add text as a child of the Sprite
+    const text = new Text(
+      '这种酒真的少喝为妙\n千万不要因小失大💊',
+      this.textStyle
+    );
+    text.anchor.set(0, 0.5);
+    text.width = Bubble.texture.width * 1.15;
+    text.height = Bubble.texture.height * 0.9;
+    text.x = 30;
+    text.y = -Bubble.texture.height / 2 + 5;
+    Bubble.addChild(text);
+    this.addChild(Bubble);
+
+    // 超人不显示
+    superman.visible = Bubble.visible = false;
+
+    // oldfilm 效果
     TweenLite.to(
       filter,
       0.5,
@@ -672,6 +716,12 @@ export default class fourthScreen extends BasicContainer {
         scratchDensity: 0.3,
         onStart: () => {}, // graphics.visible = true
         onComplete: () => {
+          // 头像和气泡不显示
+          this.getChildByName('Leonardo').visible = this.getChildByName(
+            'lucy'
+          ).visible = this.getChildByName('leonBubble').visible = false;
+          // 显示超人
+          superman.visible = Bubble.visible = true;
           this.addButton();
         }
       },
@@ -723,54 +773,30 @@ export default class fourthScreen extends BasicContainer {
         onComplete: () => {
           this.active = false;
           this.activeOldFilm = false;
+          this.removeChildren();
           this.done();
         }
       });
     });
 
     repeatButton.on('pointertap', () => {
-      this.removeChildren();
       this.active = false;
       this.activeOldFilm = false;
+      this.removeChildren();
       this.init();
     });
   }
 
   /**
-   * 屏幕 Resize 时，更新 Filter 的 Center 位置
+   * 剧本时间线
    */
-  shockWaveFilter_ChangeCenter() {
-    let sea = this.getChildByName('sea');
-    if (window.orientation === 0 || window.orientation === 180) {
-      sea.filters[1].center = [sea.height / 2, 0];
-    } else {
-      sea.filters[1].center = [0, sea.height / 2];
-    }
-  }
-
-  /**
-   * Main animation loop, updates animation store
-   * @return {null}
-   */
-  animate() {
-    if (this.active) {
-      // 波浪 filter 动画
-      let displacementSprite = this.getChildByName('sea').getChildByName(
-        'displacementSprite'
-      );
-      let shock = this.getChildByName('sea').filters;
-      shock[1].time = shock[1].time >= 3 ? -0.25 : shock[1].time + 0.01;
-      displacementSprite.x += 2;
-      // Reset x to 0 when it's over width to keep values from going to very huge numbers.
-      if (displacementSprite.x > displacementSprite.width) {
-        displacementSprite.x = 0;
-      }
-    }
-    if (this.activeOldFilm) {
-      // 旧电影 filter 动画
-      this.getChildByName('bg3_Transparent').filters[0].seed = Math.random();
-    }
-
-    requestAnimationFrame(this.animate.bind(this));
+  playScript() {
+    const playTimeline = async () => {
+      await this.Script1();
+      await this.animateScript1();
+      await this.animateScript2();
+      this.OldFilmFilter();
+    };
+    playTimeline();
   }
 }
