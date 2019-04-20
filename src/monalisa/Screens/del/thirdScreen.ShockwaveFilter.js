@@ -25,9 +25,9 @@ import { ShockwaveFilter } from '@pixi/filter-shockwave';
 export default class thirdScreen extends BasicContainer {
   constructor() {
     super();
-    this.Canvas = {
-      initCanvasWidth: 0,
-      initCanvasHeight: 0
+    this.Device = {
+      initDeviceWidth: 0,
+      initDeviceHeight: 0
     };
     this.res = {};
     this.scaleX = this.scaleY = 0;
@@ -76,24 +76,24 @@ export default class thirdScreen extends BasicContainer {
   init() {
     // 初始化
     this.res = loader.resources;
-    this.Canvas = Store.getState().Renderer;
+    this.Device = Store.getState().Renderer;
     // 切换背景图
     const loadingbg = new Sprite(this.res[path + 'bg3.jpg'].texture);
     const zoom = 1; // loadingbg.texture.height/250
-    loadingbg.width = this.Canvas.initCanvasWidth;
-    loadingbg.height = this.Canvas.initCanvasHeight;
+    loadingbg.width = this.Device.initDeviceWidth;
+    loadingbg.height = this.Device.initDeviceHeight;
     // 在原比例基础上，再次缩放 Y 轴
     loadingbg.scale.y *= zoom;
     // 计算原图与初始设备之间的比例
-    this.scaleX = this.Canvas.initCanvasWidth / loadingbg.texture.width;
+    this.scaleX = this.Device.initDeviceWidth / loadingbg.texture.width;
     this.scaleY =
-      this.Canvas.initCanvasHeight / loadingbg.texture.height * zoom;
+      this.Device.initDeviceHeight / loadingbg.texture.height * zoom;
     this.addChild(loadingbg);
 
     const sea = new Sprite(this.res[path + 'sea-background.png'].texture);
     sea.name = 'sea';
-    sea.width = this.Canvas.initCanvasWidth;
-    sea.height = this.Canvas.initCanvasHeight;
+    sea.width = this.Device.initDeviceWidth;
+    sea.height = this.Device.initDeviceHeight;
     this.addChild(sea);
     // 加入 Filter，模拟海浪效果
     const shockWaveFilter1 = new ShockwaveFilter([0, sea.height * 0.75], {
@@ -323,8 +323,8 @@ export default class thirdScreen extends BasicContainer {
     graphics.drawRoundedRect(
       20 * this.scaleX,
       20 * this.scaleY,
-      this.Canvas.initCanvasWidth * 0.9,
-      this.Canvas.initCanvasHeight * 0.95,
+      this.Device.initDeviceWidth * 0.9,
+      this.Device.initDeviceHeight * 0.95,
       16
     );
     graphics.endFill();

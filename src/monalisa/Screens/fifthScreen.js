@@ -1,19 +1,14 @@
 import BasicContainer from '../DisplayObjects/BasicContainer/BasicContainer';
-import { Text, TextStyle, Texture, Sprite, Graphics } from 'pixi.js';
-import { loader, extras } from 'pixi.js';
+import { Text, TextStyle, Texture, Sprite } from 'pixi.js';
+import { loader } from 'pixi.js';
 import { path } from '../Constants/AssetsConstants';
 import Store from '../Stores/Store';
-import {
-  TweenMax,
-  TweenLite,
-  TimelineLite,
-  Bounce,
-  Power2
-} from 'gsap/TweenMax';
+import { TimelineLite, Bounce, Power2 } from 'gsap/TweenMax';
 // eslint-disable-next-line
 import { PixiPlugin } from 'gsap/PixiPlugin';
 // import {OldFilmFilter} from 'pixi-filters'
 import { OldFilmFilter } from '@pixi/filter-old-film';
+import { PopToFront } from '../utils';
 
 /**
  * second Screen
@@ -25,14 +20,14 @@ import { OldFilmFilter } from '@pixi/filter-old-film';
 export default class fifthScreen extends BasicContainer {
   constructor() {
     super();
-    this.Canvas = {
-      initCanvasWidth: 0,
-      initCanvasHeight: 0
+    this.Device = {
+      initDeviceWidth: 0,
+      initDeviceHeight: 0
     };
     this.res = {};
     this.scaleX = this.scaleY = 0;
     // animate 控制开关
-    this.active = false;
+    this.active = this.activeOldFilm = false;
     // 定义文字样式
     this.textStyle = new TextStyle({
       fontFamily: 'Arial',
@@ -61,19 +56,19 @@ export default class fifthScreen extends BasicContainer {
   init() {
     // 初始化
     this.res = loader.resources;
-    this.Canvas = Store.getState().Renderer;
+    this.Device = Store.getState().Renderer;
     // 切换背景图
     const loadingbg = new Sprite(this.res[path + 'stage.jpg'].texture);
     const zoom = loadingbg.texture.height / 250;
     loadingbg.name = 'loadingbg';
-    loadingbg.width = this.Canvas.initCanvasWidth;
-    loadingbg.height = this.Canvas.initCanvasHeight;
+    loadingbg.width = this.Device.initDeviceWidth;
+    loadingbg.height = this.Device.initDeviceHeight;
     // 在原比例基础上，再次缩放 Y 轴
     loadingbg.scale.y *= zoom;
     // 计算原图与初始设备之间的比例
-    this.scaleX = this.Canvas.initCanvasWidth / loadingbg.texture.width;
+    this.scaleX = this.Device.initDeviceWidth / loadingbg.texture.width;
     this.scaleY =
-      this.Canvas.initCanvasHeight / loadingbg.texture.height * zoom;
+      this.Device.initDeviceHeight / loadingbg.texture.height * zoom;
     this.addChild(loadingbg);
 
     // 加入人物
@@ -125,9 +120,9 @@ export default class fifthScreen extends BasicContainer {
     lucyMsg.scale.x *= -1;
     lucyMsg.anchor.set(0, 1);
     lucyMsg.width = lucyBubble.texture.width * 0.89;
-    lucyMsg.height = lucyBubble.texture.height * 0.5;
+    lucyMsg.height = lucyBubble.texture.height * 0.8;
     lucyMsg.x = -10;
-    lucyMsg.y = -lucyBubble.texture.height / 2 + 30;
+    lucyMsg.y = -lucyBubble.texture.height / 2 + 50;
     lucyMsg.name = 'lucyMsg';
     // 加入泡泡sprite时，会自动缩放
     // 尺寸、位置都要按父容器原图来测量，注意父容器的原点
@@ -144,30 +139,37 @@ export default class fifthScreen extends BasicContainer {
     // 尺寸、位置都要按父容器原图来测量，注意父容器的原点
     leonBubble.addChild(leonMsg);
 
+    // 加入 蒙娜丽莎酒瓶
+    const bottle_monalisa = new Sprite(
+      this.res[path + 'bottle_monalisa.png'].texture
+    );
+    bottle_monalisa.width = lucy.width;
+    bottle_monalisa.height = lucy.height;
+    bottle_monalisa.anchor.set(0.5, 1);
+    bottle_monalisa.x = this.Device.initDeviceWidth / 2;
+    bottle_monalisa.y = lucy.y;
+    bottle_monalisa.name = 'bottle_monalisa';
+    bottle_monalisa.alpha = 0.8;
+    bottle_monalisa.visible = false;
+    this.addChild(bottle_monalisa);
+
     // 展开剧本时间线
     this.playScript();
   } // this.init()
 
   /**
-   * 剧本时间线
-   */
-  playScript() {
-    const playTimeline = async () => {
-      // 第一段对话
-      await this.Script1();
-      this.animateScript1();
-    };
-    playTimeline();
-  }
-
-  /**
    * 第一段台词
-   * lucy:不会请我喝的也是这种\xA0“\xA0进口酒\xA0”\xA0吧？怒！不相信！
-   * leon:请老妹必须喝好酒
+   * lucy：不会请我喝的也是这种\xA0“\xA0进口酒\xA0”\xA0吧？怒！不相信！
+   * leon：请老妹必须喝好酒呀
    * 动画：蒙娜丽莎酒瓶
-   * lucy:呀~~这不是蒙娜丽莎吗，全人类都认识啊，这酒有牌面
-   * leon:而且由于公海上条件有限🛠\n自然环境也不可控🎯\n没办法大规模生产
-   * leon:所以，哥在纽腰港租了一个保税仓\n流水线出产灌装红酒
+   * lucy：呀~~这不是蒙娜丽莎吗，全人类都认识啊，这酒有牌面
+   * leon：达芬奇家族酒庄，传承400多年\n是意大利葡萄酒在全球的领航者\n请老妹喝这酒不掉份吧
+   * 动画：达芬奇出现，我的后代这么牛B摸\n来来来，你来当祖宗，我来当孙子
+   * lucy：看着是不错
+   * 动画：河马鲜生卖158/支，我只卖79/支
+   * lucy：原瓶进口\n知名品牌\n价格实在，牛牛牛
+   * lucy：我以后想买怎么办
+   * 动画：蒙娜丽莎出现，给你一个二维码，自己体会
    */
 
   async Script1() {
@@ -176,6 +178,8 @@ export default class fifthScreen extends BasicContainer {
     const lucyBubble = this.getChildByName('lucyBubble');
     const lucyMsg = lucyBubble.getChildByName('lucyMsg');
     const leonMsgX = -leonBubble.texture.width;
+    const bottle_monalisa = this.getChildByName('bottle_monalisa');
+    const { _x, _y } = bottle_monalisa.scale; // 原始 bottle_monalisa 的缩放比
     // 定义动画的时间线
     const tl = new TimelineLite({ delay: 1 });
     // 返回 Promise 对象
@@ -199,7 +203,8 @@ export default class fifthScreen extends BasicContainer {
               lucyBubble.visible = true;
             },
             onComplete: () => {
-              lucyMsg.text = '盖茨比💘😍💘\n趴体太奢华啦\n好嗨呦！👍👍👍';
+              lucyMsg.text =
+                '请我喝的\n不会也是这种\n\xA0“\xA0进口酒🍷\xA0”\xA0吧？\n👿🙅🙅💔';
             }
           }
         )
@@ -221,7 +226,231 @@ export default class fifthScreen extends BasicContainer {
               leonBubble.visible = true;
             },
             onComplete: () => {
-              leonMsg.text = '黛西老妹😍\n我也想低调哇\n但实力它不允许啊😈😈😈';
+              leonMsg.text = '哪能啊\n请老妹必须喝好酒呀\n😅❤️️😅❤️️😅❤️️';
+            }
+          },
+          '+=2.5'
+        )
+        .fromTo(
+          // 蒙娜丽莎酒瓶出现
+          bottle_monalisa,
+          1.5,
+          {
+            pixi: {
+              scaleX: _x * 2,
+              scaleY: _y * 2,
+              ease: Bounce.easeIn
+            }
+          },
+          {
+            pixi: {
+              scaleX: _x,
+              scaleY: _y,
+              ease: Bounce.easeOut
+            },
+            onStart: () => {
+              leonBubble.visible = lucyBubble.visible = false;
+              leonMsg.text = lucyMsg.text = '';
+              bottle_monalisa.visible = true;
+            },
+            onUpdate: () => {},
+            onComplete: () => {}
+          },
+          '+=2.5'
+        )
+        .to(
+          lucyMsg,
+          0.5,
+          {
+            pixi: {
+              x: '+=1000', // 文字飞出
+              ease: Power2.easeIn
+            },
+            onStart: () => {
+              lucyBubble.visible = true;
+              lucyMsg.rotation += 2; // 文字垂直
+            },
+            onComplete: () => {
+              lucyMsg.rotation = 0;
+              lucyMsg.x = 0;
+              lucyMsg.text = '呀~~这不是蒙❌❌莎吗😍\n这酒有牌面\n👍👍👍';
+            }
+          },
+          '+=2.5'
+        )
+        .to(
+          leonMsg,
+          0.5,
+          {
+            pixi: {
+              x: '+=1000', // 文字飞出
+              ease: Power2.easeIn
+            },
+            onStart: () => {
+              leonBubble.visible = true;
+              leonMsg.rotation -= 2; // 文字垂直
+            },
+            onComplete: () => {
+              leonMsg.rotation = 0;
+              leonMsg.x = leonMsgX;
+              leonMsg.text =
+                '达芬奇家族酒庄\n400年传承\n意大利销量领先\n喝这酒不掉份吧';
+            }
+          },
+          '+=2'
+        )
+        .to(
+          leonMsg,
+          0,
+          {
+            onComplete: () => {
+              // leonBubble.visible = lucyBubble.visible = false;
+              this.getChildByName('Leonardo').visible = this.getChildByName(
+                'lucy'
+              ).visible = false;
+              return resolve();
+            }
+          },
+          '+=3.5'
+        );
+    }); // Promise 对象
+  } // this.Script1()
+
+  /**
+   * 在 this.Script1() 结束后执行
+   * 1.初始化
+   * 2、剧本：
+   * lucy:我的子孙这么牛B么？\n来来来，画笔给你\n我来当孙子
+   * leon:奇大爷\n不要太调皮哟\n
+   * lucy:话说这酒\n哪里有的卖
+   * leon:奇大爷\n给你一个2维码\n自己慢慢体会
+   * lucy:每周六还有粉丝抽奖\n哈哈哈\nI\xA0like
+   * leon:感谢大家观看\n别忘了\n点击关注喔
+   * 后接2维码
+   */
+  async animateScript1() {
+    // 涉及到的精灵
+    const lucy = this.getChildByName('lucy');
+    const leon = this.getChildByName('Leonardo');
+
+    // 重用气泡
+    const leonBubble = this.getChildByName('leonBubble');
+    const leonMsg = leonBubble.getChildByName('leonMsg');
+    const lucyBubble = this.getChildByName('lucyBubble');
+    const lucyMsg = lucyBubble.getChildByName('lucyMsg');
+    const leonMsgX = -leonBubble.texture.width;
+
+    // 加入旧电影 filter
+    this.OldFilmFilter();
+
+    // 加入达芬奇
+    const davinci = new Sprite(this.res[path + 'davinci.png'].texture);
+    davinci.width = lucy.width;
+    davinci.height = lucy.height;
+    davinci.anchor.set(1, 1); // 与 lucy 一样
+    davinci.x = lucy.x;
+    davinci.y = lucy.y;
+    davinci.scale.x *= -1;
+    davinci.name = 'davinci';
+    this.addChild(davinci);
+
+    // 加入蒙娜丽莎
+    const monalisa = new Sprite(
+      this.res[path + 'Sporty_Mona_Lisa-1.jpg'].texture
+    );
+    monalisa.alpha = 0.8;
+    monalisa.anchor.set(0, 1);
+    monalisa.width = 100 * this.scaleX;
+    monalisa.height = 130 * this.scaleY;
+    monalisa.x = leon.x;
+    monalisa.y = leon.y;
+    this.addChild(monalisa);
+
+    // 加入2维码
+    /**
+     * 微信浏览器'长按2维码'识别功能
+     * 针对的是 img H5元素
+     * 这里动态生成 H5 element
+    const qrcode = new Sprite(this.res[path + 'qrcode.jpg'].texture);
+    qrcode.width = this.Device.initDeviceWidth /3;
+    qrcode.height = lucy.height;
+    qrcode.anchor.set(0.5,1);
+    qrcode.x = this.Device.initDeviceWidth /2;
+    qrcode.y = lucy.y;
+    qrcode.name = 'qrcode';
+    qrcode.alpha = 1;
+    qrcode.visible = false;
+    this.addChild(qrcode);
+    */
+    const qrcode = document.createElement('img');
+    qrcode.setAttribute('id', 'qrcode');
+    qrcode.setAttribute('src', path + 'qrcode.jpg');
+    qrcode.setAttribute('style', 'position: fixed;display:block;');
+
+    // 设置中心点
+    qrcode.style.transformOrigin = '50% 100%';
+    // Opera、Chrome 和 Safari
+    qrcode.style.WebkitTransformOrigin = '50% 100%';
+    // IE 9
+    qrcode.style.msTransformOrigin = '50% 100%';
+
+    qrcode.width = this.Device.initDeviceWidth / 3;
+    qrcode.height = lucy.height;
+    qrcode.style.left = this.Device.initDeviceWidth / 2 + 'px';
+    qrcode.style.top = lucy.y + 'px';
+    console.log(lucy.position);
+    console.log(this.toGlobal(lucy.position));
+    // add the newly created element and its content into the DOM
+    const currentDiv = document.getElementById('container');
+    currentDiv.appendChild(qrcode);
+
+    // 将对话框 Z-index 调整到最前
+    this.children = PopToFront(this.children)(leonBubble);
+    this.children = PopToFront(this.children)(lucyBubble);
+
+    // 定义动画的时间线
+    const tl = new TimelineLite({ delay: 1 });
+    // const {_x,_y} = qrcode.scale; // 原始 qrcode 的缩放比
+    // 返回 Promise 对象
+    return new Promise(resolve => {
+      tl
+        .to(
+          lucyMsg,
+          0.5,
+          {
+            pixi: {
+              x: '+=1000', // 文字飞出
+              ease: Power2.easeIn
+            },
+            onStart: () => {
+              lucyBubble.visible = true;
+              lucyMsg.rotation += 2; // 文字垂直
+            },
+            onComplete: () => {
+              lucyMsg.rotation = 0;
+              lucyMsg.x = 0;
+              lucyMsg.text =
+                '我的子孙这么牛B么🐮🐮？\n来来来，画笔给你🎨\n我来当孙子👼👶';
+            }
+          },
+          '+=2.5'
+        )
+        .to(
+          leonMsg,
+          0.5,
+          {
+            pixi: {
+              x: '+=1000', // 文字飞出
+              ease: Power2.easeIn
+            },
+            onStart: () => {
+              leonBubble.visible = true;
+              leonMsg.rotation -= 2; // 文字垂直
+            },
+            onComplete: () => {
+              leonMsg.rotation = 0;
+              leonMsg.x = leonMsgX;
+              leonMsg.text = '奇大爷👴👴\n不要太调皮哟🖐️🖐️🖐️\n';
             }
           },
           '+=2'
@@ -235,15 +464,16 @@ export default class fifthScreen extends BasicContainer {
               ease: Power2.easeIn
             },
             onStart: () => {
+              lucyBubble.visible = true;
               lucyMsg.rotation += 2; // 文字垂直
             },
             onComplete: () => {
               lucyMsg.rotation = 0;
               lucyMsg.x = 0;
-              lucyMsg.text = '你生意咋做得\n这么大涅？🤑🤑🤑';
+              lucyMsg.text = '话说这酒🍷🍷🍷\n哪里有的卖💥💥💥';
             }
           },
-          '+=2'
+          '+=2.5'
         )
         .to(
           leonMsg,
@@ -254,12 +484,74 @@ export default class fifthScreen extends BasicContainer {
               ease: Power2.easeIn
             },
             onStart: () => {
+              leonBubble.visible = true;
               leonMsg.rotation -= 2; // 文字垂直
             },
             onComplete: () => {
               leonMsg.rotation = 0;
               leonMsg.x = leonMsgX;
-              leonMsg.text = '纽腰人民都买我的红酒\n生意好到爆🔥🔥🔥';
+              leonMsg.text = '奇大爷👴👴\n给你一个2维码\n自己慢慢体会🔱🔱';
+            }
+          },
+          '+=2'
+        )
+        .fromTo(
+          // 2维码出现
+          qrcode,
+          1.5,
+          {
+            transform: 'scale(2)',
+            ease: Bounce.easeIn
+          },
+          {
+            transform: 'scale(1)',
+            ease: Bounce.easeOut,
+            onStart: () => {
+              qrcode.style.display = 'block';
+              // this.getChildByName('bottle_monalisa').visible = false;
+            },
+            onUpdate: () => {},
+            onComplete: () => {}
+          },
+          '+=2.5'
+        )
+        .to(
+          lucyMsg,
+          0.5,
+          {
+            pixi: {
+              x: '+=1000', // 文字飞出
+              ease: Power2.easeIn
+            },
+            onStart: () => {
+              lucyBubble.visible = true;
+              lucyMsg.rotation += 2; // 文字垂直
+            },
+            onComplete: () => {
+              lucyMsg.rotation = 0;
+              lucyMsg.x = 0;
+              lucyMsg.text =
+                '每周六还有粉丝抽奖🎅🎅🎅\n哈哈哈~~~\nI\xA0like😍😍😍';
+            }
+          },
+          '+=2.5'
+        )
+        .to(
+          leonMsg,
+          0.5,
+          {
+            pixi: {
+              x: '+=1000', // 文字飞出
+              ease: Power2.easeIn
+            },
+            onStart: () => {
+              leonBubble.visible = true;
+              leonMsg.rotation -= 2; // 文字垂直
+            },
+            onComplete: () => {
+              leonMsg.rotation = 0;
+              leonMsg.x = leonMsgX;
+              leonMsg.text = '感谢大家观看👍👍👍\n别忘了\n点击关注喔♑';
             }
           },
           '+=2'
@@ -275,121 +567,97 @@ export default class fifthScreen extends BasicContainer {
           '+=3.5'
         );
     }); // Promise 对象
-  } // this.Script1()
+  } // animateScript1
 
   /**
-   * 红酒价格对比动画
-   * 在 this.Script1() 结束后执行
+   * 加入OldFilmFilter滤镜
+   * API文档：
+   * https://pixijs.io/pixi-filters/docs/PIXI.filters.OldFilmFilter.html
+   * DEMO:
+   * http://pixijs.io/pixi-filters/tools/demo/
    */
-  animateScript1() {
+  OldFilmFilter() {
     // 添加透明蒙板
-    const graphics = new Graphics();
-    // draw a rounded rectangle
-    graphics.lineStyle(2, 0xff00ff, 1);
-    graphics.beginFill(0xffffff, 0.8);
-    graphics.drawRoundedRect(
-      20 * this.scaleX,
-      20 * this.scaleY,
-      this.Canvas.initCanvasWidth * 0.9,
-      this.Canvas.initCanvasHeight * 0.95,
-      16
-    );
-    graphics.endFill();
-    graphics.name = 'graphics';
-    this.addChild(graphics);
+    /**
+     * 在容器上覆盖一层透明蒙板
+     * 对蒙板添加 filter
+     * 这样，按钮可以加在蒙板之上，没有 filter 特效
+     */
+    const bg = new Sprite(this.res[path + 'bg3.jpg'].texture);
+    bg.width = this.Device.initDeviceWidth;
+    bg.height = this.Device.initDeviceHeight;
+    bg.name = 'bg3_Transparent';
+    bg.alpha = 0.5;
+    this.addChild(bg);
 
-    // 加入 Bottle 对比
-    const Leon_bottle = new Sprite(this.res[path + 'Leon_bottle.png'].texture);
-    const lafei_bottle = new Sprite(
-      this.res[path + 'lafei_bottle.png'].texture
-    );
-
-    lafei_bottle.width = graphics.width * 0.2;
-    lafei_bottle.height = graphics.height * 1.05;
-    lafei_bottle.x = graphics.x + 40 * this.scaleX;
-    lafei_bottle.y = graphics.y + 15 * this.scaleY;
-
-    Leon_bottle.width = graphics.width * 0.2;
-    Leon_bottle.height = graphics.height * 1.05;
-    Leon_bottle.x = lafei_bottle.x + lafei_bottle.width + 80 * this.scaleX;
-    Leon_bottle.y = lafei_bottle.y;
-
-    this.addChild(Leon_bottle);
-    this.addChild(lafei_bottle);
-
-    // 泡泡
-    const bubbleTexture = Texture.fromFrame('tips-0.png');
-    const Bubble = new Sprite(bubbleTexture);
-    Bubble.anchor.set(0, 1);
-    Bubble.width = graphics.width / 4;
-    Bubble.height = graphics.height / 3;
-    Bubble.x = lafei_bottle.x + lafei_bottle.width / 2;
-    Bubble.y = lafei_bottle.y + lafei_bottle.height / 2;
-
-    // Add text as a child of the Sprite
-    const text = new Text('正规原瓶进口\n成本\xA0\xA0258元/支', this.textStyle);
-    text.anchor.set(0, 1);
-    text.width = Bubble.texture.width * 0.8;
-    text.height = Bubble.texture.height * 0.5;
-    text.x = 50;
-    text.y = -Bubble.texture.height / 2 + 80;
-    Bubble.addChild(text);
-    this.addChild(Bubble);
-
-    const Bubble2 = new Sprite(bubbleTexture);
-    Bubble2.anchor.set(0, 1);
-    Bubble2.width = graphics.width / 4;
-    Bubble2.height = graphics.height / 3;
-    Bubble2.x = Leon_bottle.x + Leon_bottle.width / 2;
-    Bubble2.y = Leon_bottle.y + Leon_bottle.height / 2;
-
-    // Add text2 as a child of the Sprite
-    const text2 = new Text('我也是进口的\n成本\xA0\xA08元/支', this.textStyle);
-    text2.anchor.set(0, 1);
-    text2.width = Bubble2.texture.width * 0.8;
-    text2.height = Bubble2.texture.height * 0.5;
-    text2.x = 50;
-    text2.y = -Bubble2.texture.height / 2 + 80;
-
-    Bubble2.addChild(text2);
-    this.addChild(Bubble2);
-
-    // 两个控制按钮
-    const nextButton = new Sprite(Texture.fromFrame('RightArrow.png'));
-    const repeatButton = new Sprite(Texture.fromFrame('repeat.png'));
-    nextButton.anchor.set(0.5);
-    repeatButton.anchor.set(0.5);
-    nextButton.width = repeatButton.width = graphics.width / 8;
-    nextButton.height = repeatButton.height = graphics.width / 8;
-    nextButton.x = graphics.width - 20 * this.scaleX;
-    nextButton.y = graphics.y + nextButton.height / 2 + 40 * this.scaleY;
-    repeatButton.x = nextButton.x;
-    repeatButton.y = nextButton.y + repeatButton.height / 2 + 60 * this.scaleY;
-    nextButton.name = 'yesbutton';
-    repeatButton.name = 'nobutton';
-    nextButton.interactive = repeatButton.interactive = true;
-    nextButton.buttonMode = repeatButton.buttonMode = true;
-    const nextText = new Text('探求原因', this.textStyle);
-    const repeatText = new Text('重播本段', this.textStyle);
-    nextText.anchor.set(0.5);
-    repeatText.anchor.set(0.5);
-    nextText.width = repeatText.width = nextButton.texture.width; //* 0.8
-    nextText.height = repeatText.height = nextButton.texture.height * 0.5;
-    nextText.y = repeatText.y = nextButton.texture.height / 2 + 30;
-    // 按钮中加入文字
-    nextButton.addChild(nextText);
-    repeatButton.addChild(repeatText);
-    // 容器中加入按钮
-    this.addChild(nextButton);
-    this.addChild(repeatButton);
-    // 定义按钮事件
-    nextButton.on('pointertap', () => {
-      this.done();
+    // 创建滤镜
+    let filter = new OldFilmFilter({
+      sepia: 0, // 0.3
+      noise: 0, // 0.3
+      scratch: 0, // 0.5
+      scratchDensity: 0, // 0.3
+      scratchWidth: 1.5,
+      // 以下设置后，vignetting 从0-1，屏幕体现圆形消失效果
+      vignettingBlur: 0,
+      vignettingAlpha: 1,
+      vignetting: 0
     });
-    repeatButton.on('pointertap', () => {
-      this.removeChildren();
-      this.active = false;
-      this.init();
-    });
-  } // animateScript1
+
+    bg.filters = [filter]; // 蒙板上加 filter
+    // 加入动态效果
+    filter.seed = Math.random();
+    this.activeOldFilm = true;
+    requestAnimationFrame(this.animate.bind(this));
+
+    // oldfilm 效果
+    // 动画时间线
+    const tl = new TimelineLite({ delay: 0 });
+    tl
+      .to(bg, 0.5, {
+        pixi: {
+          tint: 0x7d7979, // 蒙板着色，灰色
+          ease: Bounce.easeOut
+        }
+      })
+      .to(
+        filter,
+        0.5,
+        {
+          // delay: 1, // 延时1秒开始
+          sepia: 0.3,
+          noise: 0.3,
+          scratch: 0.5,
+          scratchDensity: 0.3,
+          onStart: () => {},
+          onComplete: () => {}
+        },
+        '+=1'
+      );
+  }
+
+  /**
+   * Main animation loop, updates animation store
+   * @return {null}
+   */
+  animate() {
+    if (this.active) {
+    }
+    if (this.activeOldFilm) {
+      // 旧电影 filter 动画
+      this.getChildByName('bg3_Transparent').filters[0].seed = Math.random();
+    }
+    requestAnimationFrame(this.animate.bind(this));
+  }
+
+  /**
+   * 剧本时间线
+   */
+  playScript() {
+    const playTimeline = async () => {
+      // 第一段对话
+      // await this.Script1();
+      await this.animateScript1();
+    };
+    playTimeline();
+  }
 }

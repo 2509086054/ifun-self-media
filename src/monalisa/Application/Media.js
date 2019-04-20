@@ -1,6 +1,6 @@
 import { Application } from 'pixi.js';
 import Store from '../Stores/Store';
-import { resize, updateInitCanvas } from '../Stores/RendererStore';
+import { resize, updateInitDevice } from '../Stores/RendererStore';
 
 /**
  * PIXI Application with hooks into a Store
@@ -25,14 +25,14 @@ export default class Media extends Application {
       (window.orientation === 0 || window.orientation === 180)
     ) {
       Store.dispatch(
-        updateInitCanvas({
+        updateInitDevice({
           width: this._options.height,
           height: this._options.width
         })
       );
     } else {
       Store.dispatch(
-        updateInitCanvas({
+        updateInitDevice({
           width: this._options.width,
           height: this._options.height
         })
@@ -50,11 +50,11 @@ export default class Media extends Application {
    * 构造函数中加入横屏控制后，已废弃
    * @return {null}
    */
-  updateInitCanvas() {
+  updateInitDevice() {
     // 初始尺寸，由 new 传入
     const { width, height } = this._options;
     Store.dispatch(
-      updateInitCanvas({
+      updateInitDevice({
         width: width,
         height: height
       })

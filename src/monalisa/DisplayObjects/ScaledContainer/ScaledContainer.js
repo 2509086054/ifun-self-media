@@ -43,8 +43,8 @@ export default class ScaledContainer extends Container {
    */
   resizeHandler() {
     let {
-      initCanvasWidth,
-      initCanvasHeight,
+      initDeviceWidth,
+      initDeviceHeight,
       newCanvasWidth,
       newCanvasHeight,
       forceRotation
@@ -63,17 +63,17 @@ export default class ScaledContainer extends Container {
     }
 
     // 计算缩放比
-    const Xratio = newWidth / initCanvasWidth;
-    const Yratio = newHeight / initCanvasHeight;
+    const Xratio = newWidth / initDeviceWidth;
+    const Yratio = newHeight / initDeviceHeight;
     let scale = new Point(Xratio, Yratio);
 
     // 容器新的起点为左上角(0,0)
-    let offsetX = newWidth - initCanvasWidth * Xratio;
-    let offsetY = newHeight - initCanvasHeight * Yratio;
+    let offsetX = newWidth - initDeviceWidth * Xratio;
+    let offsetY = newHeight - initDeviceHeight * Yratio;
     this.position.x = offsetX;
     this.position.y = offsetY;
     // console.log(neweight / 2)
-    // console.log(initCanvasHeight / 2 * Yratio);
+    // console.log(initDeviceHeight / 2 * Yratio);
     // 根容器自适应新缩放比例
     // 内部的 Sprite 同比例缩放，会有一定的失真
     this.scale = scale;

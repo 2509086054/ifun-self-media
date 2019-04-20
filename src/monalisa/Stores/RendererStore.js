@@ -9,8 +9,8 @@ const newCanvas = () => ({
 
 const defaultState = {
   // 画布初始尺寸，由 new Application 传入
-  initCanvasWidth: 0,
-  initCanvasHeight: 0,
+  initDeviceWidth: 0,
+  initDeviceHeight: 0,
   // Canvas 强制横屏，旋转开关
   forceRotation: true,
   // 缩放比
@@ -20,7 +20,7 @@ const defaultState = {
 };
 
 const RESIZE = 'seed/animation/RESIZE';
-const InitCanvas = 'seed/animation/InitCanvas';
+const InitDevice = 'seed/animation/InitDevice';
 
 export default (state = defaultState, action = {}) => {
   switch (action.type) {
@@ -29,12 +29,12 @@ export default (state = defaultState, action = {}) => {
         ...state,
         ...newCanvas()
       };
-    case InitCanvas:
+    case InitDevice:
       return {
         ...state,
         ...newCanvas(),
-        initCanvasWidth: action.value.width,
-        initCanvasHeight: action.value.height,
+        initDeviceWidth: action.value.width,
+        initDeviceHeight: action.value.height,
         SacleX: action.value.width / canvasWidth,
         SacleY: action.value.height / canvasHeight
       };
@@ -44,4 +44,4 @@ export default (state = defaultState, action = {}) => {
 };
 
 export const resize = () => ({ type: RESIZE });
-export const updateInitCanvas = value => ({ type: InitCanvas, value });
+export const updateInitDevice = value => ({ type: InitDevice, value });

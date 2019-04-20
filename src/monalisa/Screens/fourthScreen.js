@@ -19,9 +19,9 @@ import { PopToFront } from '../utils';
 export default class fourthScreen extends BasicContainer {
   constructor() {
     super();
-    this.Canvas = {
-      initCanvasWidth: 0,
-      initCanvasHeight: 0
+    this.Device = {
+      initDeviceWidth: 0,
+      initDeviceHeight: 0
     };
     this.res = {};
     this.scaleX = this.scaleY = 0;
@@ -61,18 +61,18 @@ export default class fourthScreen extends BasicContainer {
   init() {
     // 初始化
     this.res = loader.resources;
-    this.Canvas = Store.getState().Renderer;
+    this.Device = Store.getState().Renderer;
     // 切换背景图
     const loadingbg = new Sprite(this.res[path + 'bg3.jpg'].texture);
     const zoom = 1; // loadingbg.texture.height/250
-    loadingbg.width = this.Canvas.initCanvasWidth;
-    loadingbg.height = this.Canvas.initCanvasHeight;
+    loadingbg.width = this.Device.initDeviceWidth;
+    loadingbg.height = this.Device.initDeviceHeight;
     // 在原比例基础上，再次缩放 Y 轴
     loadingbg.scale.y *= zoom;
     // 计算原图与初始设备之间的比例
-    this.scaleX = this.Canvas.initCanvasWidth / loadingbg.texture.width;
+    this.scaleX = this.Device.initDeviceWidth / loadingbg.texture.width;
     this.scaleY =
-      this.Canvas.initCanvasHeight / loadingbg.texture.height * zoom;
+      this.Device.initDeviceHeight / loadingbg.texture.height * zoom;
     loadingbg.name = 'loadingbg';
     this.addChild(loadingbg);
 
@@ -80,21 +80,21 @@ export default class fourthScreen extends BasicContainer {
     const port = new Sprite(this.res[path + 'port.png'].texture);
     port.name = 'port';
     port.anchor.set(0, 1);
-    port.width = this.Canvas.initCanvasWidth * 0.4;
-    port.height = this.Canvas.initCanvasHeight / 2 + 20;
+    port.width = this.Device.initDeviceWidth * 0.4;
+    port.height = this.Device.initDeviceHeight / 2 + 20;
     port.x = -10 * this.scaleX;
-    port.y = this.Canvas.initCanvasHeight;
+    port.y = this.Device.initDeviceHeight;
     this.addChild(port);
 
     // 工厂
     const factory = new Sprite(this.res[path + 'factory_2.png'].texture);
     factory.name = 'factory';
     factory.anchor.set(1, 0.5); // factory 从底部中间位置拔地而起
-    factory.width = this.Canvas.initCanvasWidth * 0.45;
-    // factory.height = this.Canvas.initCanvasHeight / 3 + 20;
+    factory.width = this.Device.initDeviceWidth * 0.45;
+    // factory.height = this.Device.initDeviceHeight / 3 + 20;
     factory.height = 0; // 在animateScript1()中拔地而起
     factory.x = 580 * this.scaleX + factory.width / 2;
-    factory.y = this.Canvas.initCanvasHeight / 3;
+    factory.y = this.Device.initDeviceHeight / 3;
     this.addChild(factory);
 
     // 工厂先不出现
@@ -109,7 +109,7 @@ export default class fourthScreen extends BasicContainer {
     Leonardo.height = lucy.height = 70 * this.scaleY;
 
     lucy.anchor.set(0, 1);
-    lucy.x = this.Canvas.initCanvasWidth - 100 * this.scaleX;
+    lucy.x = this.Device.initDeviceWidth - 100 * this.scaleX;
     lucy.scale.x *= -1;
     // lucy.rotation -= Math.PI / 180 * 25;
     lucy.name = 'Leonardo';
@@ -127,8 +127,8 @@ export default class fourthScreen extends BasicContainer {
     const lucyBubbleTexture = Texture.fromFrame('bubble_4.png');
     const lucyBubble = new Sprite(lucyBubbleTexture);
     lucyBubble.anchor.set(0);
-    lucyBubble.width = this.Canvas.initCanvasWidth * 0.65;
-    lucyBubble.height = this.Canvas.initCanvasHeight * 0.3;
+    lucyBubble.width = this.Device.initDeviceWidth * 0.65;
+    lucyBubble.height = this.Device.initDeviceHeight * 0.3;
     lucyBubble.x = 670 * this.scaleX;
     lucyBubble.y = 50 * this.scaleY;
     lucyBubble.scale.x *= -1;
@@ -372,8 +372,8 @@ export default class fourthScreen extends BasicContainer {
     const goodByeTexture = Texture.fromFrame('bubble_6.png');
     const goodByeBubble = new Sprite(goodByeTexture);
     goodByeBubble.anchor.set(0.3, 1);
-    goodByeBubble.width = this.Canvas.initCanvasWidth * 0.2;
-    goodByeBubble.height = this.Canvas.initCanvasHeight * 0.2;
+    goodByeBubble.width = this.Device.initDeviceWidth * 0.2;
+    goodByeBubble.height = this.Device.initDeviceHeight * 0.2;
 
     // 货车说话
     goodByeBubble.x = truck_2.x + 30 * this.scaleX;
@@ -413,7 +413,7 @@ export default class fourthScreen extends BasicContainer {
       ]
     ];
     const tl = new TimelineMax({ delay: 0 });
-    const tagetHeight = this.Canvas.initCanvasHeight / 3 + 20;
+    const tagetHeight = this.Device.initDeviceHeight / 3 + 20;
 
     // 返回 Promise 对象
     return new Promise(resolve => {
@@ -479,8 +479,8 @@ export default class fourthScreen extends BasicContainer {
           4,
           {
             pixi: {
-              x: this.Canvas.initCanvasWidth + 10,
-              y: this.Canvas.initCanvasHeight / 2
+              x: this.Device.initDeviceWidth + 10,
+              y: this.Device.initDeviceHeight / 2
             },
             ease: Power2.easeOut,
             onStart: () => {
@@ -520,8 +520,8 @@ export default class fourthScreen extends BasicContainer {
      * 这样，按钮可以加在蒙板之上，没有 filter 特效
      */
     const bg = new Sprite(this.res[path + 'bg3.jpg'].texture);
-    bg.width = this.Canvas.initCanvasWidth;
-    bg.height = this.Canvas.initCanvasHeight;
+    bg.width = this.Device.initDeviceWidth;
+    bg.height = this.Device.initDeviceHeight;
     bg.name = 'bg3_Transparent';
     bg.alpha = 0.5;
     this.addChild(bg);
@@ -673,18 +673,18 @@ export default class fourthScreen extends BasicContainer {
     // 加入超人
     const superman = new Sprite(this.res[path + 'superman.png'].texture);
     superman.anchor.set(0.5);
-    superman.width = this.Canvas.initCanvasWidth * 0.4;
-    superman.height = this.Canvas.initCanvasHeight * 0.8;
-    superman.x = this.Canvas.initCanvasWidth / 2;
-    superman.y = this.Canvas.initCanvasHeight / 2;
+    superman.width = this.Device.initDeviceWidth * 0.4;
+    superman.height = this.Device.initDeviceHeight * 0.8;
+    superman.x = this.Device.initDeviceWidth / 2;
+    superman.y = this.Device.initDeviceHeight / 2;
     this.addChild(superman);
 
     // 泡泡
     const bubbleTexture = Texture.fromFrame('tips-0.png');
     const Bubble = new Sprite(bubbleTexture);
     Bubble.anchor.set(0, 1);
-    Bubble.width = this.Canvas.initCanvasWidth / 4;
-    Bubble.height = this.Canvas.initCanvasHeight / 3;
+    Bubble.width = this.Device.initDeviceWidth / 4;
+    Bubble.height = this.Device.initDeviceHeight / 3;
     Bubble.x = superman.x + superman.width / 5;
     Bubble.y = superman.y - superman.height / 5;
 
@@ -738,8 +738,8 @@ export default class fourthScreen extends BasicContainer {
     const repeatButton = new Sprite(Texture.fromFrame('repeat.png'));
     nextButton.anchor.set(0.5);
     repeatButton.anchor.set(0.5);
-    nextButton.width = repeatButton.width = this.Canvas.initCanvasWidth / 6;
-    nextButton.height = repeatButton.height = this.Canvas.initCanvasHeight / 6;
+    nextButton.width = repeatButton.width = this.Device.initDeviceWidth / 6;
+    nextButton.height = repeatButton.height = this.Device.initDeviceHeight / 6;
     nextButton.x = 200 * this.scaleX; // 原图绝对位置
     nextButton.y = 480 * this.scaleY;
     repeatButton.x = 600 * this.scaleX;

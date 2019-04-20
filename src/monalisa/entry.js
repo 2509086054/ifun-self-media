@@ -25,21 +25,13 @@ const loaderScr = new Screens.loaderScreen();
 root.addChild(loaderScr);
 
 /** */
-const fourth = new Screens.fourthScreen();
+const fifth = new Screens.fifthScreen();
 loaderScr.onLoaded(() => {
-  fourth.init();
+  fifth.init();
   root.removeChild(loaderScr);
-  root.addChild(fourth);
+  root.addChild(fifth);
   // 销毁 loaderScr
   loaderScr.destroy();
-});
-// 定义 fourth 的done()函数
-const fifth = new Screens.fifthScreen();
-fourth.onLoaded(() => {
-  fifth.init();
-  root.removeChild(fourth);
-  root.addChild(fifth);
-  fourth.destroy();
 });
 
 /**
@@ -82,6 +74,15 @@ third.onLoaded(() => {
   root.removeChild(third);
   root.addChild(fourth);
   third.destroy();
+});
+
+// 定义 fourth 的done()函数
+const fifth = new Screens.fifthScreen();
+fourth.onLoaded(() => {
+  fifth.init();
+  root.removeChild(fourth);
+  root.addChild(fifth);
+  fourth.destroy();
 });
 */
 app.start();

@@ -52,13 +52,13 @@ export default class loaderScreen extends BasicContainer {
    */
   initLoadingAssets() {
     // 初始化
-    const { initCanvasWidth, initCanvasHeight } = Store.getState().Renderer;
+    const { initDeviceWidth, initDeviceHeight } = Store.getState().Renderer;
 
     // FBI Warning
     const FBI = Sprite.fromImage(assets.LoadingAssets[0]);
     FBI.name = 'FBI';
-    FBI.width = initCanvasWidth;
-    FBI.height = initCanvasHeight;
+    FBI.width = initDeviceWidth;
+    FBI.height = initDeviceHeight;
     this.addChild(FBI);
     // 加载首屏资源
     loader
@@ -96,7 +96,7 @@ export default class loaderScreen extends BasicContainer {
   onAssetsLoaded() {
     // loading 页面全体精灵初始化
     this.res = loader.resources;
-    const { initCanvasWidth, initCanvasHeight } = Store.getState().Renderer;
+    const { initDeviceWidth, initDeviceHeight } = Store.getState().Renderer;
 
     // 切换背景图
     let FBI = this.getChildByName('FBI');
@@ -104,13 +104,13 @@ export default class loaderScreen extends BasicContainer {
     const loadingbg = new Sprite(this.res[assets.path + 'stage.jpg'].texture);
     const zoom = loadingbg.texture.height / 250;
     loadingbg.name = 'loadingbg';
-    loadingbg.width = initCanvasWidth;
-    loadingbg.height = initCanvasHeight;
+    loadingbg.width = initDeviceWidth;
+    loadingbg.height = initDeviceHeight;
     // 在原比例基础上，再次缩放 Y 轴
     loadingbg.scale.y *= zoom;
     // 计算原图与初始设备之间的比例
-    this.scaleX = initCanvasWidth / loadingbg.texture.width;
-    this.scaleY = initCanvasHeight / loadingbg.texture.height * zoom;
+    this.scaleX = initDeviceWidth / loadingbg.texture.width;
+    this.scaleY = initDeviceHeight / loadingbg.texture.height * zoom;
 
     // loadingbg.anchor.set(0.5)
     this.addChild(loadingbg);
@@ -258,7 +258,7 @@ export default class loaderScreen extends BasicContainer {
    * loader 重新赋值,加载整个APP资源
    */
   loadAppAssets() {
-    const { initCanvasWidth } = Store.getState().Renderer;
+    const { initDeviceWidth } = Store.getState().Renderer;
 
     loader
       .add(assets.AppAssets)
@@ -289,10 +289,10 @@ export default class loaderScreen extends BasicContainer {
     let bar01 = new Sprite(this.res[assets.path + 'loadingbar01.png'].texture);
     let bar02 = new Sprite(this.res[assets.path + 'loadingbar02.png'].texture);
     bar01.anchor.set(0);
-    bar01.x = 130 * this.scaleX; // initCanvasWidth / 2
-    bar01.y = 220 * this.scaleY; // (initCanvasHeight/2 + 20)//
+    bar01.x = 130 * this.scaleX; // initDeviceWidth / 2
+    bar01.y = 220 * this.scaleY; // (initDeviceHeight/2 + 20)//
     bar01.height = 20 * this.scaleY;
-    bar01.width = initCanvasWidth * 0.6;
+    bar01.width = initDeviceWidth * 0.6;
     bar01.name = 'bar01';
 
     bar02.anchor.set(0, 0);

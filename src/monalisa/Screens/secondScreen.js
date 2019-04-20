@@ -25,9 +25,9 @@ import { OldFilmFilter } from '@pixi/filter-old-film';
 export default class secondScreen extends BasicContainer {
   constructor() {
     super();
-    this.Canvas = {
-      initCanvasWidth: 0,
-      initCanvasHeight: 0
+    this.Device = {
+      initDeviceWidth: 0,
+      initDeviceHeight: 0
     };
     this.res = {};
     this.scaleX = this.scaleY = 0;
@@ -61,19 +61,19 @@ export default class secondScreen extends BasicContainer {
   init() {
     // 初始化
     this.res = loader.resources;
-    this.Canvas = Store.getState().Renderer;
+    this.Device = Store.getState().Renderer;
     // 切换背景图
     const loadingbg = new Sprite(this.res[path + 'stage.jpg'].texture);
     const zoom = loadingbg.texture.height / 250;
     loadingbg.name = 'loadingbg';
-    loadingbg.width = this.Canvas.initCanvasWidth;
-    loadingbg.height = this.Canvas.initCanvasHeight;
+    loadingbg.width = this.Device.initDeviceWidth;
+    loadingbg.height = this.Device.initDeviceHeight;
     // 在原比例基础上，再次缩放 Y 轴
     loadingbg.scale.y *= zoom;
     // 计算原图与初始设备之间的比例
-    this.scaleX = this.Canvas.initCanvasWidth / loadingbg.texture.width;
+    this.scaleX = this.Device.initDeviceWidth / loadingbg.texture.width;
     this.scaleY =
-      this.Canvas.initCanvasHeight / loadingbg.texture.height * zoom;
+      this.Device.initDeviceHeight / loadingbg.texture.height * zoom;
     this.addChild(loadingbg);
 
     // 加入人物
@@ -280,8 +280,8 @@ export default class secondScreen extends BasicContainer {
     graphics.drawRoundedRect(
       20 * this.scaleX,
       20 * this.scaleY,
-      this.Canvas.initCanvasWidth * 0.9,
-      this.Canvas.initCanvasHeight * 0.95,
+      this.Device.initDeviceWidth * 0.9,
+      this.Device.initDeviceHeight * 0.95,
       16
     );
     graphics.endFill();
@@ -289,9 +289,9 @@ export default class secondScreen extends BasicContainer {
     this.addChild(graphics);
 
     // 加入 Bottle 对比
-    const Leon_bottle = new Sprite(this.res[path + 'Leon_bottle.png'].texture);
+    const Leon_bottle = new Sprite(this.res[path + 'bottle_Leon.png'].texture);
     const lafei_bottle = new Sprite(
-      this.res[path + 'lafei_bottle.png'].texture
+      this.res[path + 'bottle_lafei.png'].texture
     );
 
     lafei_bottle.width = graphics.width * 0.2;

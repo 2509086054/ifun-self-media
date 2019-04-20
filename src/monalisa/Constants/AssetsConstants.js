@@ -22,8 +22,9 @@ const AppAssets = [
 
   '/assets/images/monalisa/Leon.png',
   '/assets/images/monalisa/lucy.png',
-  '/assets/images/monalisa/Leon_bottle.png',
-  '/assets/images/monalisa/lafei_bottle.png',
+  '/assets/images/monalisa/bottle_Leon.png',
+  '/assets/images/monalisa/bottle_lafei.png',
+  '/assets/images/monalisa/bottle_monalisa.png',
 
   // '/assets/images/monalisa/wine-glass.png',
   // '/assets/images/monalisa/wine-glass_no.png',
@@ -39,17 +40,16 @@ const AppAssets = [
   '/assets/images/monalisa/ocean_freight1.png',
   '/assets/images/monalisa/boad.png',
   '/assets/images/monalisa/wine_barrel.png',
-  '/assets/images/monalisa/daojiu.png',
   '/assets/images/monalisa/storm.png',
   '/assets/images/monalisa/port.png',
   '/assets/images/monalisa/factory_2.png',
   '/assets/images/monalisa/Forklift_1.png',
   '/assets/images/monalisa/Forklift_2.png',
-  '/assets/images/monalisa/Forklift_3.png',
-  '/assets/images/monalisa/Forklift_4.png',
   '/assets/images/monalisa/truck_1.png',
   '/assets/images/monalisa/truck_2.png',
-  '/assets/images/monalisa/superman.png'
+  '/assets/images/monalisa/superman.png',
+  '/assets/images/monalisa/davinci.png',
+  '/assets/images/monalisa/qrcode.jpg'
 ];
 
 export { LoadingAssets, LoadingJson, AppAssets, VideoAssets, AppJson };

@@ -17,9 +17,9 @@ import { OldFilmFilter } from '@pixi/filter-old-film';
 export default class firstScreen extends BasicContainer {
   constructor() {
     super();
-    this.Canvas = {
-      initCanvasWidth: 0,
-      initCanvasHeight: 0
+    this.Device = {
+      initDeviceWidth: 0,
+      initDeviceHeight: 0
     };
     this.res = {};
     this.scaleX = this.scaleY = 0;
@@ -49,7 +49,7 @@ export default class firstScreen extends BasicContainer {
   init() {
     // 初始化
     this.res = loader.resources;
-    this.Canvas = Store.getState().Renderer;
+    this.Device = Store.getState().Renderer;
     // 定义切换video，使用 AnimatedSprite
     let videoTextures = [];
     let time = 200;
@@ -59,16 +59,16 @@ export default class firstScreen extends BasicContainer {
     });
     // video
     this.scaleX =
-      this.Canvas.initCanvasWidth /
+      this.Device.initDeviceWidth /
       videoTextures[videoTextures.length - 1].texture.width;
     this.scaleY =
-      this.Canvas.initCanvasHeight /
+      this.Device.initDeviceHeight /
       videoTextures[videoTextures.length - 1].texture.height;
 
     const video = new extras.AnimatedSprite(videoTextures);
     video.name = 'video';
-    video.width = this.Canvas.initCanvasWidth;
-    video.height = this.Canvas.initCanvasHeight;
+    video.width = this.Device.initDeviceWidth;
+    video.height = this.Device.initDeviceHeight;
     video.animationSpeed = 3.5;
     video.loop = false;
     video.onFrameChange = () => {
@@ -212,8 +212,8 @@ export default class firstScreen extends BasicContainer {
     graphics.drawRoundedRect(
       20 * this.scaleX,
       20 * this.scaleY,
-      this.Canvas.initCanvasWidth * 0.9,
-      this.Canvas.initCanvasHeight * 0.85,
+      this.Device.initDeviceWidth * 0.9,
+      this.Device.initDeviceHeight * 0.85,
       16
     );
     graphics.endFill();
@@ -292,13 +292,13 @@ export default class firstScreen extends BasicContainer {
     )
     const zoom = loadingbg.texture.height/250
     loadingbg.name = 'loadingbg'
-    loadingbg.width = this.Canvas.initCanvasWidth
-    loadingbg.height = this.Canvas.initCanvasHeight
+    loadingbg.width = this.Device.initDeviceWidth
+    loadingbg.height = this.Device.initDeviceHeight
     // 在原比例基础上，再次缩放 Y 轴
     loadingbg.scale.y *= zoom
     // 计算原图与初始设备之间的比例
-    this.scaleX = this.Canvas.initCanvasWidth / loadingbg.texture.width
-    this.scaleY = this.Canvas.initCanvasHeight / loadingbg.texture.height * zoom
+    this.scaleX = this.Device.initDeviceWidth / loadingbg.texture.width
+    this.scaleY = this.Device.initDeviceHeight / loadingbg.texture.height * zoom
 
     // loadingbg.anchor.set(0.5)
     this.addChild(loadingbg)

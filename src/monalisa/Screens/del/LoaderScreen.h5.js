@@ -29,14 +29,14 @@ export default class LoaderScreen extends BasicContainer {
    */
   setup() {
     // 初始化
-    const { initCanvasWidth, initCanvasHeight } = Store.getState().Renderer;
+    const { initDeviceWidth, initDeviceHeight } = Store.getState().Renderer;
 
     // FBI Warning
     let FBI = Sprite.fromImage('/assets/images/monalisa/Loading/FBI.png');
 
     // 设置和画布同样的尺寸
-    FBI.width = initCanvasWidth;
-    FBI.height = initCanvasHeight;
+    FBI.width = initDeviceWidth;
+    FBI.height = initDeviceHeight;
     this.addChild(FBI);
     // loading 本页的 Assets
     loader
@@ -60,7 +60,7 @@ export default class LoaderScreen extends BasicContainer {
   onAssetsLoaded() {
     // 初始化
     this.res = loader.resources;
-    const { initCanvasWidth, initCanvasHeight } = Store.getState().Renderer;
+    const { initDeviceWidth, initDeviceHeight } = Store.getState().Renderer;
 
     // 创建背景
     const bg = new Sprite(
@@ -68,14 +68,14 @@ export default class LoaderScreen extends BasicContainer {
     );
 
     // 设置和画布同样的尺寸
-    bg.width = initCanvasWidth;
-    bg.height = initCanvasHeight;
+    bg.width = initDeviceWidth;
+    bg.height = initDeviceHeight;
     bg.name = 'bg';
     this.addChild(bg);
 
     // 计算原图与初始设备之间的比例
-    this.scaleX = initCanvasWidth / bg.texture.width;
-    this.scaleY = initCanvasHeight / bg.texture.height;
+    this.scaleX = initDeviceWidth / bg.texture.width;
+    this.scaleY = initDeviceHeight / bg.texture.height;
 
     // 计算 monalisa 位置
     const monalisa = new Sprite(
@@ -85,8 +85,8 @@ export default class LoaderScreen extends BasicContainer {
     monalisa.width = monalisa.texture.width * this.scaleX * 0.6;
     monalisa.height = monalisa.texture.height * this.scaleY * 0.6;
     monalisa.anchor.set(0.5);
-    monalisa.x = initCanvasWidth / 2;
-    monalisa.y = initCanvasHeight / 2 + 100 * this.scaleY;
+    monalisa.x = initDeviceWidth / 2;
+    monalisa.y = initDeviceHeight / 2 + 100 * this.scaleY;
     monalisa.scale.x *= -1;
     this.addChild(monalisa);
 
