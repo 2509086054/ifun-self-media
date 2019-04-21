@@ -1,14 +1,15 @@
 // template : https://github.com/erikras/ducks-modular-redux
 import { canvasWidth, canvasHeight } from '../Constants/AppConstants';
 const newCanvas = () => ({
-  newCanvasWidth: window.innerWidth,
-  newCanvasHeight: window.innerHeight,
+  // 设备最新变化后的尺寸
+  newDeviceWidth: window.innerWidth,
+  newDeviceHeight: window.innerHeight,
   resolution: window.devicePixelRatio,
   stageCenter: { x: window.innerWidth / 2, y: window.innerHeight / 2 }
 });
 
 const defaultState = {
-  // 画布初始尺寸，由 new Application 传入
+  // 设备初始尺寸，由 new Application 传入
   initDeviceWidth: 0,
   initDeviceHeight: 0,
   // Canvas 强制横屏，旋转开关

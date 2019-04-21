@@ -18,7 +18,7 @@ export default class Media extends Application {
     document.getElementById(element).appendChild(this.view);
     this.view.id = 'Media'; // 设置 canvas ID
     const { forceRotation } = Store.getState().Renderer;
-    // 保存原始画布尺寸
+    // 保存原始设备尺寸
     // 初始尺寸，由 new 传入
     if (
       forceRotation &&
@@ -63,7 +63,7 @@ export default class Media extends Application {
   resizeHandler() {
     // 渲染器resize成新的尺寸
     this.renderer.resize(window.innerWidth, window.innerHeight);
-    // 更新状态
+    // 更新状态，设备最新的尺寸 newDeviceWidth newDeviceHeight
     Store.dispatch(resize());
   }
 }

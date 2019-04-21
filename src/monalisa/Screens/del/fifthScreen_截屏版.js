@@ -1,15 +1,15 @@
-import BasicContainer from '../DisplayObjects/BasicContainer/BasicContainer';
+import BasicContainer from '../../DisplayObjects/BasicContainer/BasicContainer';
 import { Text, TextStyle, Texture, Sprite } from 'pixi.js';
 import { loader } from 'pixi.js';
-import { path } from '../Constants/AssetsConstants';
-import Store from '../Stores/Store';
-import { resize } from '../Stores/RendererStore';
+import { path } from '../../Constants/AssetsConstants';
+import Store from '../../Stores/Store';
+import { resize } from '../../Stores/RendererStore';
 import { TimelineLite, Bounce, Power2 } from 'gsap/TweenMax';
 // eslint-disable-next-line
 import { PixiPlugin } from 'gsap/PixiPlugin';
 // import {OldFilmFilter} from 'pixi-filters'
 import { OldFilmFilter } from '@pixi/filter-old-film';
-import { PopToFront } from '../utils';
+import { PopToFront } from '../../utils';
 
 /**
  * second Screen
@@ -25,6 +25,7 @@ export default class fifthScreen extends BasicContainer {
       initDeviceWidth: 0,
       initDeviceHeight: 0
     };
+    this.app = {};
     this.res = {};
     this.scaleX = this.scaleY = 0;
     // animate 控制开关
@@ -372,27 +373,26 @@ export default class fifthScreen extends BasicContainer {
      * 微信浏览器'长按2维码'识别功能
      * 针对的是 img H5元素
      * 这里动态生成 H5 element*/
-    const qrcode = new Sprite(
-      this.res[path + 'Sporty_Mona_Lisa-1.jpg'].texture
-    );
+    const qrcode = new Sprite(this.res[path + 'qrcode.jpg'].texture);
     qrcode.width = this.Device.initDeviceWidth / 3;
     qrcode.height = lucy.height;
+    // qrcode.anchor.set(0.5,1);
+    // qrcode.x = this.Device.initDeviceWidth /2;
+    // qrcode.y = lucy.y;
+    qrcode.anchor.set(0.5);
+    qrcode.x = this.Device.initDeviceWidth / 2;
+    qrcode.y = lucy.y - qrcode.height / 2;
     qrcode.name = 'qrcode';
-
-    qrcode.rotation = -Math.PI / 2; // 翻转-90度，微信只能识别竖屏的2维码，这里默认是横屏的
-    qrcode.anchor.set(0); // 资源原图的左上角位置，翻转-90度后，是精灵的左下角位置
-    qrcode.x = (this.Device.initDeviceWidth - qrcode.height) / 2;
-    qrcode.y = lucy.y;
+    qrcode.rotation = -Math.PI / 2;
     // qrcode.visible = false;
     this.addChild(qrcode);
+    // this.transformQrcode();
+    // Store.dispatch(resize());
+    // this.qrcodeMirror();
 
     // 更新状态，设备最新的尺寸 newDeviceWidth newDeviceHeight
-    const firstPosition = true;
-    this.scaledQrcode1(firstPosition);
-    // 注册广播，及时更新 qrcode 的起点位置
-    Store.subscribe(() => {
-      this.scaledQrcode1();
-    });
+    // this.scaledQrcode1(this.toGlobal(qrcode.position));
+    // Store.dispatch(resize());
 
     // 将对话框 Z-index 调整到最前
     this.children = PopToFront(this.children)(leonBubble);
@@ -564,118 +564,46 @@ export default class fifthScreen extends BasicContainer {
    * qrcode 自适应屏幕
    * img 元素要手工调整尺寸和位置
    */
-  scaledQrcode1(firstPosition = false) {
-    const qrcode = this.getChildByName('qrcode');
-    let { x, y } = this.toGlobal(qrcode.position);
-    console.log(this.parent);
-    if (
-      firstPosition &&
-      (window.orientation === 0 || window.orientation === 180)
-    ) {
-      // 竖屏
-      let temp = x;
-      x = window.innerWidth - y;
-      y = temp;
-    }
+  transformQrcode() {
+    // 注册广播，及时更新 qrcode 的起点位置
+    Store.subscribe(() => {
+      let qrcode2 = document.getElementById('qrcode2');
+      // 如果节点存在，先删除再重建
+      if (qrcode2 != null) {
+        qrcode2.parentElement.removeChild(qrcode2);
+      }
+      // 生成截图
+      qrcode2 = this.app.renderer.plugins.extract.image(this.app.view);
+
+      qrcode2.setAttribute('id', 'qrcode2');
+      qrcode2.setAttribute('style', 'position: absolute;display:block;');
+      const currentDiv = document.getElementById('container');
+      currentDiv.appendChild(qrcode2);
+
+      if (window.orientation === 0 || window.orientation === 180) {
+        // 竖屏
+      } else {
+        // 横屏
+      }
+    });
+  }
+
+  qrcodeMirror() {
+    // 注册广播，及时更新 qrcode 的起点位置
+    // Store.subscribe(() => {
+    // Render the graphics as an HTMLImageElement
+    const image = this.app.renderer.view.toDataURL();
+    // add the newly created element and its content into the DOM
     const qrcode2 =
       document.getElementById('qrcode2') != null
         ? document.getElementById('qrcode2')
         : document.createElement('img');
     qrcode2.setAttribute('id', 'qrcode2');
-    qrcode2.setAttribute('src', path + 'Sporty_Mona_Lisa-1.jpg');
+    qrcode2.setAttribute('src', image);
     qrcode2.setAttribute('style', 'position: absolute;display:block;');
-
-    // add the newly created element and its content into the DOM
     const currentDiv = document.getElementById('container');
     currentDiv.appendChild(qrcode2);
-
-    if (window.orientation === 0 || window.orientation === 180) {
-      // 竖屏
-
-      qrcode2.width = qrcode.width; // window.innerHeight/5;
-      qrcode2.height = qrcode.height; // window.innerWidth /5;
-
-      qrcode2.style.left = x + 'px';
-      qrcode2.style.top = y + 'px';
-    } else {
-      // 横屏
-
-      qrcode2.width = qrcode.width; // window.innerWidth/5;
-      qrcode2.height = qrcode.height; // window.innerHeight /5;
-
-      qrcode2.style.left = x + 'px';
-      qrcode2.style.top = y + 'px';
-      qrcode2.style.transformOrigin = 'top left';
-      qrcode2.style.transform = 'rotate(-90deg)';
-    }
-  }
-  scaledQrcode2() {
-    const lucy = this.getChildByName('lucy');
-    const qrcode = document.createElement('img');
-    qrcode.setAttribute('id', 'qrcode');
-    qrcode.setAttribute('src', path + 'qrcode.jpg');
-    qrcode.setAttribute('style', 'position: fixed;display:block;');
-
-    // 设置中心点
-    // qrcode.style.transformOrigin = '50% 100%';
-    // Opera、Chrome 和 Safari
-    // qrcode.style.WebkitTransformOrigin = '50% 100%';
-    // IE 9
-    // qrcode.style.msTransformOrigin = '50% 100%';
-    // 设置缩放比 // qrcode.style.transform = 'matrix(1, 0, 0, 1, 0, 0)';
-    qrcode.style.transform = 'scale(1)';
-
-    /**
-     * img 使用设备最新的尺寸进行定位
-     * 与sprite不同，pixi已经在root容器上进行缩放，所有子节点都会按比例进行缩放
-     * 所以只与 initDeviceWidth initDeviceHeight 进行计算即可
-     */
-    const { newDeviceWidth, newDeviceHeight } = Store.getState().Renderer;
-
-    const { x, y } = this.toGlobal(lucy.position);
-
-    if (window.orientation === 0 || window.orientation === 180) {
-      // 竖屏
-      qrcode.width = newDeviceHeight / 3;
-      qrcode.height = newDeviceWidth / 3;
-      qrcode.style.transform = 'rotate(90deg)';
-      qrcode.style.left = x + 'px';
-      qrcode.style.top = (newDeviceHeight - qrcode.height) / 2 + 'px';
-    } else {
-      // 横屏
-      qrcode.width = newDeviceWidth / 3;
-      qrcode.height = newDeviceHeight / 3;
-      qrcode.style.transform = 'rotate(0deg)';
-      qrcode.style.left = (newDeviceWidth - qrcode.width) / 2 + 'px';
-      qrcode.style.top = y - qrcode.height + 'px';
-    }
-
-    // add the newly created element and its content into the DOM
-    const currentDiv = document.getElementById('container');
-    currentDiv.appendChild(qrcode);
-
-    // 注册广播，及时更新 qrcode 的起点位置
-    Store.subscribe(() => {
-      const { newDeviceWidth, newDeviceHeight } = Store.getState().Renderer;
-
-      const { x, y } = this.toGlobal(lucy.position);
-
-      if (window.orientation === 0 || window.orientation === 180) {
-        // 竖屏
-        qrcode.width = newDeviceHeight / 3;
-        qrcode.height = newDeviceWidth / 3;
-        qrcode.style.transform = 'rotate(90deg)';
-        qrcode.style.left = x + 'px';
-        qrcode.style.top = (newDeviceHeight - qrcode.height) / 2 + 'px';
-      } else {
-        // 横屏
-        qrcode.width = newDeviceWidth / 3;
-        qrcode.height = newDeviceHeight / 3;
-        qrcode.style.transform = 'rotate(0deg)';
-        qrcode.style.left = (newDeviceWidth - qrcode.width) / 2 + 'px';
-        qrcode.style.top = y - qrcode.height + 'px';
-      }
-    });
+    // });
   }
 
   /**

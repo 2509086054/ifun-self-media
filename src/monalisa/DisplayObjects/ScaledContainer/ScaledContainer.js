@@ -45,21 +45,21 @@ export default class ScaledContainer extends Container {
     let {
       initDeviceWidth,
       initDeviceHeight,
-      newCanvasWidth,
-      newCanvasHeight,
+      newDeviceWidth,
+      newDeviceHeight,
       forceRotation
     } = Store.getState().Renderer;
-    // console.log(Store.getState().Renderer.newCanvasWidth + '==resizeHandler===========');
+    // console.log(Store.getState().Renderer.newDeviceWidth + '==resizeHandler===========');
     // 旋转判断
-    let newWidth = newCanvasWidth;
-    let newHeight = newCanvasHeight;
+    let newWidth = newDeviceWidth;
+    let newHeight = newDeviceHeight;
     // if (window.orientation === 90 || window.orientation === -90) {
     if (
       forceRotation &&
       (window.orientation === 0 || window.orientation === 180)
     ) {
-      newWidth = newCanvasHeight;
-      newHeight = newCanvasWidth;
+      newWidth = newDeviceHeight;
+      newHeight = newDeviceWidth;
     }
 
     // 计算缩放比

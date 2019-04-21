@@ -372,27 +372,23 @@ export default class fifthScreen extends BasicContainer {
      * 微信浏览器'长按2维码'识别功能
      * 针对的是 img H5元素
      * 这里动态生成 H5 element*/
-    const qrcode = new Sprite(
-      this.res[path + 'Sporty_Mona_Lisa-1.jpg'].texture
-    );
+    const qrcode = new Sprite(this.res[path + 'qrcode.jpg'].texture);
     qrcode.width = this.Device.initDeviceWidth / 3;
     qrcode.height = lucy.height;
+    // qrcode.anchor.set(0.5,1);
+    // qrcode.x = this.Device.initDeviceWidth /2;
+    // qrcode.y = lucy.y;
+    qrcode.anchor.set(0.5);
+    qrcode.x = this.Device.initDeviceWidth / 2;
+    qrcode.y = lucy.y - qrcode.height / 2;
     qrcode.name = 'qrcode';
-
-    qrcode.rotation = -Math.PI / 2; // 翻转-90度，微信只能识别竖屏的2维码，这里默认是横屏的
-    qrcode.anchor.set(0); // 资源原图的左上角位置，翻转-90度后，是精灵的左下角位置
-    qrcode.x = (this.Device.initDeviceWidth - qrcode.height) / 2;
-    qrcode.y = lucy.y;
+    qrcode.rotation = -Math.PI / 2;
     // qrcode.visible = false;
     this.addChild(qrcode);
 
     // 更新状态，设备最新的尺寸 newDeviceWidth newDeviceHeight
-    const firstPosition = true;
-    this.scaledQrcode1(firstPosition);
-    // 注册广播，及时更新 qrcode 的起点位置
-    Store.subscribe(() => {
-      this.scaledQrcode1();
-    });
+    // this.scaledQrcode1(this.toGlobal(qrcode.position));
+    // Store.dispatch(resize());
 
     // 将对话框 Z-index 调整到最前
     this.children = PopToFront(this.children)(leonBubble);
@@ -561,53 +557,118 @@ export default class fifthScreen extends BasicContainer {
   } // animateScript1
 
   /**
+   * 加入OldFilmFilter滤镜
+   * API文档：
+   * https://pixijs.io/pixi-filters/docs/PIXI.filters.OldFilmFilter.html
+   * DEMO:
+   * http://pixijs.io/pixi-filters/tools/demo/
+   */
+  OldFilmFilter() {
+    // 添加透明蒙板
+    /**
+     * 在容器上覆盖一层透明蒙板
+     * 对蒙板添加 filter
+     * 这样，按钮可以加在蒙板之上，没有 filter 特效
+     */
+    const bg = new Sprite(this.res[path + 'bg3.jpg'].texture);
+    bg.width = this.Device.initDeviceWidth;
+    bg.height = this.Device.initDeviceHeight;
+    bg.name = 'bg3_Transparent';
+    bg.alpha = 0.5;
+    this.addChild(bg);
+
+    // 创建滤镜
+    let filter = new OldFilmFilter({
+      sepia: 0, // 0.3
+      noise: 0, // 0.3
+      scratch: 0, // 0.5
+      scratchDensity: 0, // 0.3
+      scratchWidth: 1.5,
+      // 以下设置后，vignetting 从0-1，屏幕体现圆形消失效果
+      vignettingBlur: 0,
+      vignettingAlpha: 1,
+      vignetting: 0
+    });
+
+    bg.filters = [filter]; // 蒙板上加 filter
+    // 加入动态效果
+    filter.seed = Math.random();
+    this.activeOldFilm = true;
+    requestAnimationFrame(this.animate.bind(this));
+
+    // oldfilm 效果
+    // 动画时间线
+    const tl = new TimelineLite({ delay: 0 });
+    tl
+      .to(bg, 0.5, {
+        pixi: {
+          tint: 0x7d7979, // 蒙板着色，灰色
+          ease: Bounce.easeOut
+        }
+      })
+      .to(
+        filter,
+        0.5,
+        {
+          // delay: 1, // 延时1秒开始
+          sepia: 0.3,
+          noise: 0.3,
+          scratch: 0.5,
+          scratchDensity: 0.3,
+          onStart: () => {},
+          onComplete: () => {}
+        },
+        '+=1'
+      );
+  }
+
+  /**
    * qrcode 自适应屏幕
    * img 元素要手工调整尺寸和位置
    */
-  scaledQrcode1(firstPosition = false) {
+  scaledQrcode1({ x, y }) {
     const qrcode = this.getChildByName('qrcode');
-    let { x, y } = this.toGlobal(qrcode.position);
-    console.log(this.parent);
-    if (
-      firstPosition &&
-      (window.orientation === 0 || window.orientation === 180)
-    ) {
-      // 竖屏
-      let temp = x;
-      x = window.innerWidth - y;
-      y = temp;
-    }
-    const qrcode2 =
-      document.getElementById('qrcode2') != null
-        ? document.getElementById('qrcode2')
-        : document.createElement('img');
-    qrcode2.setAttribute('id', 'qrcode2');
-    qrcode2.setAttribute('src', path + 'Sporty_Mona_Lisa-1.jpg');
-    qrcode2.setAttribute('style', 'position: absolute;display:block;');
+    // const { x, y } = this.toGlobal(qrcode.position);
+    // 注册广播，及时更新 qrcode 的起点位置
+    Store.subscribe(() => {
+      console.log(this.toLocal(qrcode.position));
 
-    // add the newly created element and its content into the DOM
-    const currentDiv = document.getElementById('container');
-    currentDiv.appendChild(qrcode2);
+      const qrcode2 =
+        document.getElementById('qrcode2') != null
+          ? document.getElementById('qrcode2')
+          : document.createElement('img');
 
-    if (window.orientation === 0 || window.orientation === 180) {
-      // 竖屏
+      qrcode2.setAttribute('id', 'qrcode2');
+      qrcode2.setAttribute('src', path + 'qrcode.jpg');
+      qrcode2.setAttribute('style', 'position: absolute;display:block;');
 
-      qrcode2.width = qrcode.width; // window.innerHeight/5;
-      qrcode2.height = qrcode.height; // window.innerWidth /5;
+      // add the newly created element and its content into the DOM
+      const currentDiv = document.getElementById('container');
+      currentDiv.appendChild(qrcode2);
 
-      qrcode2.style.left = x + 'px';
-      qrcode2.style.top = y + 'px';
-    } else {
-      // 横屏
+      if (window.orientation === 0 || window.orientation === 180) {
+        // 竖屏
+        // qrcode2.style.top = x +'px';
+        // qrcode2.style.left = y + 'px';
+        // qrcode2.style.transform = 'rotate(90deg)';
+        // qrcode2.style.transformOrigin = 'top right';
+        // qrcode2.style.transformOrigin = 'center';
+        qrcode2.width = window.innerHeight / 5;
+        qrcode2.height = window.innerWidth / 5;
 
-      qrcode2.width = qrcode.width; // window.innerWidth/5;
-      qrcode2.height = qrcode.height; // window.innerHeight /5;
+        qrcode2.style.right = (window.innerWidth - qrcode2.width) / 2 + 'px'; // y +'px';
+        qrcode2.style.top = window.innerHeight - qrcode2.height - 10 + 'px'; // x
+      } else {
+        // 横屏
+        qrcode2.width = window.innerWidth / 5;
+        qrcode2.height = window.innerHeight / 5;
 
-      qrcode2.style.left = x + 'px';
-      qrcode2.style.top = y + 'px';
-      qrcode2.style.transformOrigin = 'top left';
-      qrcode2.style.transform = 'rotate(-90deg)';
-    }
+        // qrcode2.style.left = x +'px';
+        // qrcode2.style.top = y + 'px';
+        qrcode2.style.left = (window.innerWidth - qrcode2.width) / 2 + 'px'; // y +'px';
+        qrcode2.style.top = window.innerHeight - qrcode2.height - 10 + 'px'; // x
+      }
+    });
   }
   scaledQrcode2() {
     const lucy = this.getChildByName('lucy');
@@ -676,72 +737,6 @@ export default class fifthScreen extends BasicContainer {
         qrcode.style.top = y - qrcode.height + 'px';
       }
     });
-  }
-
-  /**
-   * 加入OldFilmFilter滤镜
-   * API文档：
-   * https://pixijs.io/pixi-filters/docs/PIXI.filters.OldFilmFilter.html
-   * DEMO:
-   * http://pixijs.io/pixi-filters/tools/demo/
-   */
-  OldFilmFilter() {
-    // 添加透明蒙板
-    /**
-     * 在容器上覆盖一层透明蒙板
-     * 对蒙板添加 filter
-     * 这样，按钮可以加在蒙板之上，没有 filter 特效
-     */
-    const bg = new Sprite(this.res[path + 'bg3.jpg'].texture);
-    bg.width = this.Device.initDeviceWidth;
-    bg.height = this.Device.initDeviceHeight;
-    bg.name = 'bg3_Transparent';
-    bg.alpha = 0.5;
-    this.addChild(bg);
-
-    // 创建滤镜
-    let filter = new OldFilmFilter({
-      sepia: 0, // 0.3
-      noise: 0, // 0.3
-      scratch: 0, // 0.5
-      scratchDensity: 0, // 0.3
-      scratchWidth: 1.5,
-      // 以下设置后，vignetting 从0-1，屏幕体现圆形消失效果
-      vignettingBlur: 0,
-      vignettingAlpha: 1,
-      vignetting: 0
-    });
-
-    bg.filters = [filter]; // 蒙板上加 filter
-    // 加入动态效果
-    filter.seed = Math.random();
-    this.activeOldFilm = true;
-    requestAnimationFrame(this.animate.bind(this));
-
-    // oldfilm 效果
-    // 动画时间线
-    const tl = new TimelineLite({ delay: 0 });
-    tl
-      .to(bg, 0.5, {
-        pixi: {
-          tint: 0x7d7979, // 蒙板着色，灰色
-          ease: Bounce.easeOut
-        }
-      })
-      .to(
-        filter,
-        0.5,
-        {
-          // delay: 1, // 延时1秒开始
-          sepia: 0.3,
-          noise: 0.3,
-          scratch: 0.5,
-          scratchDensity: 0.3,
-          onStart: () => {},
-          onComplete: () => {}
-        },
-        '+=1'
-      );
   }
 
   /**

@@ -6,7 +6,8 @@ import * as Screens from './Screens';
 
 const app = new Media('container', {
   width: window.innerWidth,
-  height: window.innerHeight
+  height: window.innerHeight,
+  preserveDrawingBuffer: true
 
   /* devicePixelRatio: window.devicePixelRatio || 1,
     antialias: true, // 消除锯齿
@@ -26,6 +27,7 @@ root.addChild(loaderScr);
 
 /** */
 const fifth = new Screens.fifthScreen();
+fifth.app = app;
 loaderScr.onLoaded(() => {
   fifth.init();
   root.removeChild(loaderScr);
@@ -33,6 +35,7 @@ loaderScr.onLoaded(() => {
   // 销毁 loaderScr
   loaderScr.destroy();
 });
+fifth.onLoaded(() => {});
 
 /**
 // 定义loader的done()函数
