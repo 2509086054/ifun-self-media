@@ -6,8 +6,15 @@ import * as Screens from './Screens';
 
 const app = new Media('container', {
   width: window.innerWidth,
-  height: window.innerHeight,
-  preserveDrawingBuffer: true
+  height: window.innerHeight
+
+  /**
+   * preserveDrawingBuffer = true
+   * 确保 HtmlCanvasElement.toDataURL() 截图不黑屏
+   * 但 resize() 后截图还是黑屏
+   * 已弃用
+   */
+  // preserveDrawingBuffer: true
 
   /* devicePixelRatio: window.devicePixelRatio || 1,
     antialias: true, // 消除锯齿
@@ -25,7 +32,7 @@ app.stop();
 const loaderScr = new Screens.loaderScreen();
 root.addChild(loaderScr);
 
-/** */
+/**
 const fifth = new Screens.fifthScreen();
 fifth.app = app;
 loaderScr.onLoaded(() => {
@@ -36,8 +43,8 @@ loaderScr.onLoaded(() => {
   loaderScr.destroy();
 });
 fifth.onLoaded(() => {});
-
-/**
+*/
+/** */
 // 定义loader的done()函数
 const first = new Screens.firstScreen();
 loaderScr.onLoaded(() => {
@@ -87,7 +94,7 @@ fourth.onLoaded(() => {
   root.addChild(fifth);
   fourth.destroy();
 });
-*/
+
 app.start();
 // Listen for animate update
 app.ticker.add(delta => {
