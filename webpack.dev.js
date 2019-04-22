@@ -2,11 +2,11 @@ const merge = require('webpack-merge');
 const path = require('path');
 const common = require('./webpack.common.js');
 
-const webpack = require('webpack');
+// const webpack = require('webpack');
 
 module.exports = merge(common, {
   mode: 'development',
-  plugins: [new webpack.HotModuleReplacementPlugin()],
+  // plugins: [new webpack.HotModuleReplacementPlugin()],
   node: { fs: 'empty' },
   devtool: 'cheap-module-source-map', // 'inline-source-map',
   devServer: {
