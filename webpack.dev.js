@@ -13,8 +13,8 @@ module.exports = merge(common, {
     contentBase: path.join(__dirname, 'dist'),
     compress: true,
     port: 8080,
-    host: '0.0.0.0',
-    quiet: true, // lets WebpackDashboard do its thing
-    hot: true // 模块热替换(hot module replacement 或 HMR)
+    host: '0.0.0.0'
+    // quiet: true, // lets WebpackDashboard do its thing
+    // hot: true // 模块热替换(hot module replacement 或 HMR)
   }
 });

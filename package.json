@@ -28,7 +28,6 @@
     "cacheclean": " npm cache clean --force"
   },
   "dependencies": {
-    "createjs-npm": "^0.1.0",
     "gsap": "^2.1.2",
     "pixi-filters": "^2.7.1",
     "pixi-sound": "^2.1.0",

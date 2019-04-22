@@ -15,11 +15,6 @@ module.exports = {
     new CleanWebpackPlugin(),
     new copyWebpackPlugin([{ from: './src/assets', to: 'assets' }])
   ],
-  resolve: {
-    alias: {
-      createjs: path.resolve(__dirname, './src/utils/createjs.js')
-    }
-  },
   module: {
     rules: [
       {
