@@ -1,6 +1,6 @@
-var path = require('path');
-var DEBUG = process.env.NODE_ENV !== 'production';
+const path = require('path');
 const copyWebpackPlugin = require('copy-webpack-plugin');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 module.exports = {
   entry: {
@@ -8,10 +8,13 @@ module.exports = {
     // index: ['./src/bideo.js/main.js']
   },
   output: {
-    filename: 'bundle.js',
-    path: path.resolve(__dirname, 'build')
+    filename: 'main.bundle.js',
+    path: path.resolve(__dirname, 'dist')
   },
-  plugins: [new copyWebpackPlugin([{ from: './src/assets', to: 'assets' }])],
+  plugins: [
+    new CleanWebpackPlugin(),
+    new copyWebpackPlugin([{ from: './src/assets', to: 'assets' }])
+  ],
   resolve: {
     alias: {
       createjs: path.resolve(__dirname, './src/utils/createjs.js')
@@ -21,7 +24,8 @@ module.exports = {
     rules: [
       {
         test: /\.js$/,
-        exclude: /node_modules/,
+        include: path.resolve(__dirname, 'src'),
+        exclude: /(\/node_modules\/|\/nouse\/)/i, // [/node_modules/,/bideo/],
         use: {
           loader: 'babel-loader'
         }
@@ -45,13 +49,5 @@ module.exports = {
         use: 'raw-loader'
       }
     ]
-  },
-  node: { fs: 'empty' },
-  devServer: {
-    contentBase: path.join(__dirname, 'build'),
-    compress: true,
-    port: 8080,
-    host: '0.0.0.0'
-  },
-  devtool: DEBUG ? 'cheap-module-source-map' : false
+  }
 };

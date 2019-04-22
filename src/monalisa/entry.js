@@ -105,5 +105,7 @@ app.ticker.add(delta => {
    * the renderer is rerendered appropriately at 60fps internally
    * by PIXI.Application in v4
      app.renderer.render(root)
-   */
+   */ app.renderer.render(
+    root
+  );
 });

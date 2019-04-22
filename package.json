@@ -15,9 +15,9 @@
   ],
   "contributors": ["dean wu <dean.wu.sz@gmail.com>"],
   "scripts": {
-    "start": "webpack-dev-server --mode development",
+    "start": "webpack-dev-server --config webpack.dev.js",
+    "build": "webpack --config webpack.prod.js",
     "webpack": "webpack --mode development ",
-    "build": "webpack --mode production",
     "format":
       "find app -name '*.js' | xargs -I{} ./node_modules/.bin/prettier --write --single-quote {}",
     "prewebpack": "npm run clean",
@@ -43,6 +43,7 @@
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.6.1",
+    "clean-webpack-plugin": "^2.0.1",
     "copy-webpack-plugin": "^5.0.1",
     "eslint": "^4.19.1",
     "eslint-config-prettier": "^2.10.0",
@@ -56,9 +57,11 @@
     "raw-loader": "^0.5.1",
     "reactman": "^3.2.0",
     "rimraf": "^2.6.2",
+    "uglifyjs-webpack-plugin": "^2.1.2",
     "webpack": "^4.1.1",
     "webpack-cli": "^3.1.1",
-    "webpack-dev-server": "^3.1.1"
+    "webpack-dev-server": "^3.1.1",
+    "webpack-merge": "^4.2.1"
   },
   "engines": {
     "node": ">=8.0.0"
