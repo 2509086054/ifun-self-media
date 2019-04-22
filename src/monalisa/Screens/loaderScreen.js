@@ -320,7 +320,7 @@ export default class loaderScreen extends BasicContainer {
   /* APP 资源加载完成后执行 */
   onComplete() {
     let sound =
-      loader.resources['/assets/sounds/monalisa/American Money_80.mp3'].sound;
+      loader.resources['./assets/sounds/monalisa/American Money_80.mp3'].sound;
     sound.loop = true;
     sound.volume = 0.1;
     sound.play();
